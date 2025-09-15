@@ -1,0 +1,589 @@
+import React, { useState, useRef, useEffect,useContext } from "react";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+import { useDrag } from "@use-gesture/react";
+import { Link, useNavigate } from "react-router-dom";
+import LocationSearchPanel from "../components/LocationSearchPanel";
+import LookingForDriver from "../components/LookingForDriver";
+import ConfirmRide from "../components/ConfirmRide";
+import WaitingForDriver from "../components/WaitingForDriver";
+import axios from "axios";
+import VehiclePanel from "../components/VehiclePanel";
+import { SocketContext } from "../context/SocketContext";
+import {UserDataContext} from '../context/UserContext'
+import Map from '../components/Map'
+
+
+function Home() {
+  const logo =
+    "https://imgs.search.brave.com/Qytw_NXKyFxwwc0vzLr3hbi8hrXtzDbeh_Ziku74uSI/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9sb2dv/cy13b3JsZC5uZXQv/d3AtY29udGVudC91/cGxvYWRzLzIwMjAv/MDUvVWJlci1Mb2dv/LTcwMHgzOTQucG5n";
+
+    const {socket} = useContext(SocketContext)
+    const {user} = useContext(UserDataContext)
+    
+    const navigate = useNavigate()
+  // states
+  const [pickup, setPickup] = useState("");
+  const [destination, setDestination] = useState("");
+  const [panelOpen, setPanelOpen] = useState(false);
+  const [pickstart, setPickStart] = useState(false);
+  const [vehiclePanel, setVehiclePanel] = useState(false);
+  const [LookingForDriverPanel, setLookingForDriverPanel] = useState(false);
+  const [confirmRidePanel, setConfirmRidePanel] = useState(false);
+  const [vehicleImage, setVehicleImage] = useState("");
+  const [WaitingForDriverPanel, setWaitingForDriverPanel] = useState(false);
+  const [suggestions, setSuggestions] = useState([]);
+  const [activeInput, setActiveInput] = useState("pickup");
+  const [fare,setFare] = useState({})
+  const [vehicleType , setVehicleType] = useState(null)
+  const [Ride , setRide] = useState(null)
+  const [locationState, setLocationState] = useState(null)
+
+  // refs
+  const bottomPanelRef = useRef(null);
+  const panelRef = useRef(null);
+  const pickupRef = useRef(null);
+  const destinationRef = useRef(null);
+  const vehiclePanelRef = useRef(null);
+  const confirmRidePanelRef = useRef(null);
+  const LookingForDriverPanelRef = useRef(null);
+  const WaitingForDriverPanelRef = useRef(null);
+  const panelButtonRef = useRef(null);
+
+  // Abort controller ref for cancelling requests
+  const controllerRef = useRef(null);
+  // timer ref used by debounce utility created below
+  const debounceTimerRef = useRef(null);
+
+  // images
+  const UberGoImage =
+    "https://imgs.search.brave.com/TKzcq4TXbGqQUdpiEcg9FgywtpYVK37LZka0tX-8t24/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9zdGF0/aWMudmVjdGVlenku/Y29tL3N5c3RlbS9y/ZXNvdXJjZXMvdGh1/bWJuYWlscy8wMjkv/OTQ2LzIwMS9zbWFs/bC93aGl0ZS1tb2Rl/cm4tY2FyLWlzb2xh/dGVkLW9uLXRyYW5z/cGFyZW50LWJhY2tn/cm91bmQtM2QtcmVu/ZGVyaW5nLWlsbHVz/dHJhdGlvbi1mcmVl/LXBuZy5wbmc";
+  const UberMotoImage =
+    "https://user-gen-media-assets.s3.amazonaws.com/gpt4o_images/96091ab3-c266-472a-99b5-b78dda3b50cd.png";
+  const UberVanImage =
+    "https://imgs.search.brave.com/_sATx4OPlO8FBP2PUr5GsBo2PT7V9J3-JMMe7eTQhBI/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9zdGF0/aWMudmVjdGVlenku/Y29tL3N5c3RlbS9y/ZXNvdXJjZXMvdGh1/bWJuYWlscy8wNDgv/NTk1LzE4NS9zbWFs/bC9tb2Rlcm4tY2Fy/LWlzb2xhdGVkLW9u/LWJhY2tncm91bmQt/M2QtcmVuZGVyaW5n/LWlsbHVzdHJhdGlv/bi1wbmcucG5n";
+  const UberAutoImage =
+    "https://user-gen-media-assets.s3.amazonaws.com/gpt4o_images/474bbf7d-56af-4649-9f19-cfadc1a2e696.png";
+
+  const submitHandler = (e) => {
+    e.preventDefault();
+  };
+
+  // GSAP
+  useGSAP(() => {
+      if (panelOpen) {
+        gsap.to(panelRef.current, {
+          height: "70%",
+          opacity: 1,
+          duration: 0.5,
+          ease: "power2.out",
+        });
+        gsap.to(panelButtonRef.current, {
+          opacity: 1,
+        });
+      } else {
+        gsap.to(panelRef.current, {
+          height: 0,
+          delay: 0.1,
+          opacity: 0,
+          duration: 0.6,
+          ease: "power2.out",
+        });
+        gsap.to(panelButtonRef.current, {
+          opacity: 0,
+        });
+        setPickStart(false);
+      }
+    },
+    [panelOpen]
+  );
+  useGSAP(
+    () => {
+      if (vehiclePanel) {
+        gsap.to(vehiclePanelRef.current, {
+          transform: "translateY(0)",
+          duration: 0.6,
+          ease: "power2.out",
+        });
+      } else {
+        gsap.to(vehiclePanelRef.current, {
+          transform: "translateY(100%)",
+          duration: 0.6,
+          ease: "power2.out",
+          delay: 0.1,
+        });
+      }
+    },
+    [vehiclePanel]
+  );
+  useGSAP(
+    () => {
+      if (LookingForDriverPanel) {
+        setVehiclePanel(false);
+        gsap.to(LookingForDriverPanelRef.current, {
+          transform: "translateY(0)",
+          duration: 0.6,
+          ease: "power2.out",
+        });
+      } else {
+        gsap.to(LookingForDriverPanelRef.current, {
+          transform: "translateY(100%)",
+          duration: 0.6,
+          ease: "power2.out",
+          delay: 0.1,
+        });
+      }
+    },
+    [LookingForDriverPanel]
+  );
+  useGSAP(
+    () => {
+      if (confirmRidePanel) {
+        setVehiclePanel(false);
+        gsap.to(confirmRidePanelRef.current, {
+          transform: "translateY(0)",
+          duration: 0.6,
+          ease: "power2.out",
+        });
+      } else {
+        gsap.to(confirmRidePanelRef.current, {
+          transform: "translateY(100%)",
+          duration: 0.6,
+          ease: "power2.out",
+          delay: 0.1,
+        });
+      }
+    },
+    [confirmRidePanel]
+  );
+  useGSAP(
+    () => {
+      if (WaitingForDriverPanel) {
+        setLookingForDriverPanel(false);
+        gsap.to(WaitingForDriverPanelRef.current, {
+          transform: "translateY(0)",
+          duration: 0.6,
+          ease: "power2.out",
+        });
+      } else {
+        gsap.to(WaitingForDriverPanelRef.current, {
+          transform: "translateY(100%)",
+          duration: 0.6,
+          ease: "power2.out",
+          delay: 0.1,
+        });
+      }
+    },
+    [WaitingForDriverPanel]
+  );
+
+  ///useEffect
+
+useEffect(()=>{
+    if(!user) {
+      return
+    }
+    socket.emit('join' , {
+      userType : "user" , 
+      userId : user._id
+    })
+},[user]) 
+
+useEffect(() => {
+  const getPositionAsync = () => {
+    return new Promise((resolve, reject) =>
+      navigator.geolocation.getCurrentPosition(resolve, reject, {
+        enableHighAccuracy: true,
+        maximumAge: 0,
+      })
+    )
+  }
+
+  const fetchLocation = async () => {
+    try {
+      const position = await getPositionAsync()
+      setLocationState({
+        lat : position.coords.latitude,
+        lon : position.coords.longitude
+      })
+      
+    } catch (error) {
+      console.error('Error getting location:', error)
+    }
+  }
+  fetchLocation() // Initial fetch
+
+  const intervalId = setInterval(fetchLocation, 5000) // Repeat every 5s
+
+  return () => clearInterval(intervalId) // Clean up on unmount
+}, [])
+
+useEffect(()=>{
+  const handleRideStart = (ride)=>{
+    setRide(ride);
+    setWaitingForDriverPanel(false);
+    navigate('/riding', {state : {ride : ride , locationState}});
+  }
+
+  socket.on('ride-started' , ride => handleRideStart(ride))
+
+  return () => {
+            socket.off('ride-started', handleRideStart);
+        };
+}, [socket, navigate,locationState])
+
+useEffect(()=>{
+  const handleRideConfirmed = (ride)=>{
+    setLookingForDriverPanel(false)
+    setWaitingForDriverPanel(true)
+    setRide(ride)
+  }
+  socket.on('ride-confirmed' , ride =>handleRideConfirmed(ride))
+
+  return () => {
+            socket.off('ride-confirmed', handleRideConfirmed);
+        }; 
+},[socket,navigate])
+
+
+  // BINDS
+  const bind = useDrag(
+    ({ movement: [, my], last }) => {
+      const targetRef = vehiclePanelRef; // 👈 use correct ref
+
+      if (targetRef?.current) {
+        const clampedY = Math.max(0, my);
+
+        if (!last) {
+          gsap.set(targetRef.current, { y: clampedY });
+        } else {
+          if (clampedY > 80) {
+            gsap.to(targetRef.current, {
+              y: "100%",
+              duration: 0.3,
+              ease: "power2.out",
+              onComplete: () => {
+                if (vehiclePanel) {
+                  setVehiclePanel(false);
+                }
+              },
+            });
+          } else {
+            gsap.to(targetRef.current, {
+              y: 0,
+              duration: 0.3,
+              ease: "power2.out",
+            });
+          }
+        }
+      }
+    },
+    { axis: "y" }
+  );
+  const bind2 = useDrag(
+    ({ movement: [, my], last }) => {
+      const targetRef = bottomPanelRef;
+
+      if (targetRef?.current) {
+        const clampedY = Math.max(0, my);
+
+        if (!last) {
+          gsap.set(targetRef.current, { y: clampedY });
+        } else {
+          if (clampedY > 100) {
+            setPanelOpen(false);
+            gsap.to(targetRef.current, {
+              delay: 0.1,
+              y: 0,
+            });
+          } else {
+            gsap.to(targetRef.current, {
+              y: 0,
+              duration: 0.3,
+              ease: "power2.out",
+            });
+          }
+        }
+      }
+    },
+    { axis: "y" }
+  );
+
+  // get suggestions — cancels previous requests and updates suggestions
+  async function getSuggestions(address) {
+    if (!address || address.trim() === "") {
+      setSuggestions([]);
+      return;
+    }
+
+    // abort previous request if any
+    controllerRef.current?.abort();
+    controllerRef.current = new AbortController();
+
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/maps/get-suggestions`,
+        {
+          params: { address },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            'User-Agent': 'Uber-clone/1.0 (yadhavmundekkat@email.com)'
+          },
+          signal: controllerRef.current.signal,
+        }
+      );
+
+      if (response.status === 200) {
+        setSuggestions(Array.isArray(response.data) ? response.data : []);
+      } else {
+        // non-200
+        setSuggestions([]);
+        console.error("getSuggestions non-200", response.status);
+      }
+    } catch (error) {
+      // canceled?
+      if (error?.code === "ERR_CANCELED") {
+        // request aborted, ignore
+        return;
+      }
+      console.error("getSuggestions error:", error);
+      setSuggestions([]);
+    }
+  }
+
+  // simple debounce utility using ref so the debounced function is stable
+  function debounce(fn, delay = 200) {
+    return (...args) => {
+      if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+      debounceTimerRef.current = setTimeout(() => fn(...args), delay);
+    };
+  }
+
+  const debouncedGetSuggestions = useRef(debounce((v) => getSuggestions(v), 400)).current;
+
+  // ensure we clean up timers and controllers on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+      controllerRef.current?.abort();
+    };
+  }, []);
+
+
+  async function findTrip() {
+    const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/rides/get-fare`,{
+      params :{
+        pickup , 
+        destination
+      },
+      headers : {
+        Authorization : `Bearer ${localStorage.getItem('token')}`
+      }
+    })
+    setFare(response.data)
+    setPanelOpen(false);
+    setVehiclePanel(true);
+  }
+
+
+  async function createRide(){
+    const response = await axios.post(
+      `${import.meta.env.VITE_BASE_URL}/rides/create`,
+      {
+        pickup,
+        destination,
+        vehicleType
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`
+        }
+      }
+    );
+
+  }
+
+
+
+  return (
+    <div className="h-screen relative overflow-hidden">
+      <img src={logo} alt="" className="w-25 absolute left-5 top-5" />
+      <button
+        onClick={()=>{
+          navigate('/logout')
+        }}
+        className="absolute right-5 top-5 px-4 py-3 bg-white rounded-full "
+      >
+        <i className="text-xl font-semibold ri-logout-box-r-line"></i>
+      </button>
+
+      {/* Background image */}
+      <div className="h-screen w-screen z-[-10] touch-auto">
+      {locationState ? (
+        <Map center={locationState} />
+      ) : (
+        <div>Loading map...</div>
+      )}
+    </div>
+
+      {/* Panels */}
+      <div
+        className=" h-screen absolute bottom-0 w-full flex flex-col justify-end touch-none "
+        ref={bottomPanelRef}
+        {...(panelOpen ? bind2() : {})}
+      >
+        {/* Bottom panel */}
+        <div className="h-[30%] bg-white rounded-t-2xl  relative p-5 touch-none py-4">
+          {panelOpen ? (
+            <div className=" line2 absolute w-10 top-1/21 h-1 bg-gray-300 left-[43%] rounded-sm mb-4"></div>
+          ) : null}
+
+          <h4 className="text-3xl font-semibold">Find a trip</h4>
+
+          <form
+            onSubmit={(e) => {
+              submitHandler(e);
+            }}
+          >
+            <div className=" line absolute h-16 flex w-2 flex-col top-22 left-10">
+              <div className="bg-black w-2 h-3 mb-1 rounded-[50%]"></div>
+              <div className=" w-1 h-15 bg-black rounded ml-0.5"></div>
+              <div className="bg-black w-2 h-3  mt-1"></div>
+            </div>
+
+            <input
+              type="text"
+              ref={pickupRef}
+              placeholder="Add a pickup location"
+              value={pickup}
+              onClick={() => {
+                setPanelOpen(true);
+                setActiveInput("pickup");
+                setSuggestions([]);
+              }}
+              onChange={(e) => {
+                setPickup(e.target.value);
+                debouncedGetSuggestions(e.target.value);
+              }}
+              onMouseDown={(e) => {
+                if (!pickstart) {
+                  e.preventDefault();
+                  setPickStart(!pickstart);
+                }
+              }}
+              className="bg-[#eeeeee] w-full px-12 py-2 rounded-lg text-base mb-3 mt-5 focus:outline-none"
+            />
+
+            <input
+              type="text"
+              ref={destinationRef}
+              placeholder="Set Destination"
+              value={destination}
+              onClick={() => {
+                setPanelOpen(true);
+                setActiveInput("destination");
+                setSuggestions([]);
+              }}
+              onChange={(e) => {
+                setDestination(e.target.value);
+                debouncedGetSuggestions(e.target.value);
+              }}
+              onMouseDown={(e) => {
+                if (!pickstart) {
+                  e.preventDefault();
+                  setPickStart(!pickstart);
+                }
+              }}
+              className="bg-[#eeeeee] w-full px-12 py-2 rounded-lg text-base focus:outline-none"
+            />
+
+            <button
+              type="button"
+              ref={panelButtonRef}
+              className="bg-black w-full opacity-0 text-white py-2 mt-2 rounded-lg font-semibold"
+              onClick={findTrip}
+            >
+              Find Trip
+            </button>
+          </form>
+        </div>
+
+        {/* Location Panel (hidden until gsap opens it) */}
+        <div className="h-[0] bg-white opacity-0 px-8" ref={panelRef}>
+          <LocationSearchPanel
+            setPanelOpen={setPanelOpen}
+            setVehiclePanel={setVehiclePanel}
+            suggestions={suggestions}
+            setSuggestions={setSuggestions}
+            activeInput={activeInput}
+            setPickup={setPickup}
+            setDestination={setDestination}
+          />
+        </div>
+
+        {/* Vehicles panel */}
+        <div className="fixed z-10 bottom-0 h-[65%] pt-4 bg-white w-full flex flex-col px-2 translate-y-full rounded-t-2xl overflow-y-scroll overflow-hidden scrollbar-hide"
+          ref={vehiclePanelRef} >
+            <VehiclePanel 
+            fare={fare}
+            setVehicleType={setVehicleType}
+            selectVehicle={setVehicleType}
+            setVehicleImage={setVehicleImage}
+            setConfirmRidePanel={setConfirmRidePanel}
+            />
+        </div>
+
+        {/* Confirm / Looking / Waiting panels (kept) */}
+        <div
+          ref={confirmRidePanelRef}
+          className="fixed z-12 bottom-0 bg-white translate-y-full h-[70%] pt-4 w-full flex flex-col  rounded-t-2xl "
+        >
+          <ConfirmRide
+            createRide={createRide}
+            pickup={pickup}
+            fare={fare}
+            vehicleType={vehicleType}
+            destination={destination}
+            vehicleImage={vehicleImage}
+            setVehiclePanel={setVehiclePanel}
+            confirmRidePanelRef={confirmRidePanelRef}
+            confirmRidePanel={confirmRidePanel}
+            setLookingForDriverPanel={setLookingForDriverPanel}
+            setConfirmRidePanel={setConfirmRidePanel}
+          />
+        </div>
+
+        <div
+          className="fixed z-12 bottom-0 bg-white translate-y-full h-[70%] pt-4 w-full flex flex-col  rounded-t-2xl "
+          ref={LookingForDriverPanelRef}
+        >
+          <LookingForDriver
+            vehicleImage={vehicleImage}
+            destination={destination}
+            pickup={pickup}
+            fare={fare}
+            vehicleType={vehicleType}
+            setConfirmRidePanel={setConfirmRidePanel}
+            LookingForDriverPanelRef={LookingForDriverPanelRef}
+            setLookingForDriverPanel={setLookingForDriverPanel}
+            LookingForDriverPanel={LookingForDriverPanel}
+          />
+        </div>
+
+        <div
+          className="fixed z-12 bottom-0 bg-white translate-y-full h-[70%] pt-4 w-full flex flex-col  rounded-t-2xl "
+          ref={WaitingForDriverPanelRef}
+        >
+          <WaitingForDriver
+            vehicleImage={vehicleImage}
+            WaitingForDriverPanel={WaitingForDriverPanel}
+            WaitingForDriverPanelRef={WaitingForDriverPanelRef}
+            ride={Ride}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default Home;
