@@ -4,7 +4,7 @@ import 'remixicon/fonts/remixicon.css'
 import { BrowserRouter } from 'react-router-dom'
 import UserContext from './context/UserContext.jsx'
 import CaptainContext from './context/CaptainContext.jsx'
-import SocketProvider from './context/SocketContext.jsx'  // ⬅️ import
+import SocketProvider from './context/SocketContext.jsx'
 import {DatabaseProvider} from './context/DatabaseContext.jsx'
 
 createRoot(document.getElementById('root')).render(
@@ -12,7 +12,7 @@ createRoot(document.getElementById('root')).render(
       <CaptainContext>
       <UserContext>
         <SocketProvider>
-          <BrowserRouter>
+          <BrowserRouter basename="/uber-clone">
             <App />
           </BrowserRouter>
         </SocketProvider>
