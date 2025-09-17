@@ -12,7 +12,7 @@ createRoot(document.getElementById('root')).render(
       <CaptainContext>
       <UserContext>
         <SocketProvider>
-          <BrowserRouter basename="/uber-clone">
+          <BrowserRouter basename="/uber-clone/">
             <App />
           </BrowserRouter>
         </SocketProvider>
