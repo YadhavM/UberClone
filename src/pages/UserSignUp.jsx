@@ -3,6 +3,7 @@ import logo from '../images/logo.png'
 import { Link,useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import {UserDataContext} from '../context/UserContext'
+import {DatabaseContext} from '../context/DatabaseContext'
 
 function UserSignUp() {
 
@@ -10,13 +11,14 @@ function UserSignUp() {
   const [firstname,setFirstname] = useState('') ; 
   const [lastname,setLastname] = useState('') ; 
   const [password,setPassword] = useState('') ;
+  const [loading ,setLoading] = useState(false)
 
   const navigate = useNavigate() ;
 
   const {user , setUser} = useContext(UserDataContext) ;
-
+  const {apiKey} = useContext(DatabaseContext)
   const handleSubmit = async (e) => {
-
+    setLoading(true)
     e.preventDefault();
     const newUser = {
       email : email,
@@ -25,12 +27,13 @@ function UserSignUp() {
         firstname: firstname,
         lastname: lastname
       },}
-    const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/users/register`, newUser)
+    const response = await axios.post(`${apiKey}/users/register`, newUser)
 
     if(response.status === 201){
       const data = response.data ;
 
       setUser(data.user)
+      setLoading(false)
       localStorage.setItem('token' , data.token)
       navigate('/home')
     }
@@ -92,6 +95,16 @@ function UserSignUp() {
       </div>
       <div className="">
         <p className='text-xs leading-tight '>By proceding you consent to get calls , WhatsApp or SMS message, including by automated means, from Uber and its affiliates to the email Provided</p>
+      </div>
+
+      <div className="fixed top-0 left-0">
+        {loading && (
+            <div className="fixed h-screen w-screen top-0 flex items-center justify-center z-50 transparent-bg text-black">
+              <div className="w-50 h-40 bg-gray-200 rounded-xl flex flex-col items-center justify-center">
+                <div className="w-12 h-12 border-4 border-gray-300 border-t-black rounded-full animate-spin"></div>
+              </div>
+            </div>
+          )}
       </div>
     </div>
   )

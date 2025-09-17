@@ -12,7 +12,7 @@ import VehiclePanel from "../components/VehiclePanel";
 import { SocketContext } from "../context/SocketContext";
 import {UserDataContext} from '../context/UserContext'
 import Map from '../components/Map'
-
+import { DatabaseContext } from "../context/DatabaseContext";
 
 function Home() {
   const logo =
@@ -20,6 +20,7 @@ function Home() {
 
     const {socket} = useContext(SocketContext)
     const {user} = useContext(UserDataContext)
+    const {apiKey} = useContext(DatabaseContext)
     
     const navigate = useNavigate()
   // states
@@ -38,6 +39,7 @@ function Home() {
   const [vehicleType , setVehicleType] = useState(null)
   const [Ride , setRide] = useState(null)
   const [locationState, setLocationState] = useState(null)
+  const [loading , setLoading] = useState(false)
 
   // refs
   const bottomPanelRef = useRef(null);
@@ -315,6 +317,7 @@ useEffect(()=>{
       setSuggestions([]);
       return;
     }
+    
 
     // abort previous request if any
     controllerRef.current?.abort();
@@ -322,19 +325,19 @@ useEffect(()=>{
 
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_BASE_URL}/maps/get-suggestions`,
+        `${apiKey}/maps/get-suggestions`,
         {
           params: { address },
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
-            'User-Agent': 'Uber-clone/1.0 (yadhavmundekkat@email.com)'
           },
           signal: controllerRef.current.signal,
         }
       );
 
       if (response.status === 200) {
-        setSuggestions(Array.isArray(response.data) ? response.data : []);
+        setSuggestions(Array.isArray(response.data.features) ? response.data.features : []);
+        
       } else {
         // non-200
         setSuggestions([]);
@@ -343,7 +346,6 @@ useEffect(()=>{
     } catch (error) {
       // canceled?
       if (error?.code === "ERR_CANCELED") {
-        // request aborted, ignore
         return;
       }
       console.error("getSuggestions error:", error);
@@ -359,7 +361,7 @@ useEffect(()=>{
     };
   }
 
-  const debouncedGetSuggestions = useRef(debounce((v) => getSuggestions(v), 400)).current;
+  const debouncedGetSuggestions = useRef(debounce((v) => getSuggestions(v), 200)).current;
 
   // ensure we clean up timers and controllers on unmount
   useEffect(() => {
@@ -371,7 +373,8 @@ useEffect(()=>{
 
 
   async function findTrip() {
-    const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/rides/get-fare`,{
+    setLoading(true)
+    const response = await axios.get(`${apiKey}/rides/get-fare`,{
       params :{
         pickup , 
         destination
@@ -381,6 +384,7 @@ useEffect(()=>{
       }
     })
     setFare(response.data)
+    setLoading(false)
     setPanelOpen(false);
     setVehiclePanel(true);
   }
@@ -388,7 +392,7 @@ useEffect(()=>{
 
   async function createRide(){
     const response = await axios.post(
-      `${import.meta.env.VITE_BASE_URL}/rides/create`,
+      `${apiKey}/rides/create`,
       {
         pickup,
         destination,
@@ -410,9 +414,9 @@ useEffect(()=>{
       <img src={logo} alt="" className="w-25 absolute left-5 top-5" />
       <button
         onClick={()=>{
-          navigate('/logout')
+          navigate('/user-logout')
         }}
-        className="absolute right-5 top-5 px-4 py-3 bg-white rounded-full "
+        className="absolute right-5 top-5 px-4 py-3 bg-white rounded-full z-3 "
       >
         <i className="text-xl font-semibold ri-logout-box-r-line"></i>
       </button>
@@ -422,7 +426,9 @@ useEffect(()=>{
       {locationState ? (
         <Map center={locationState} />
       ) : (
-        <div>Loading map...</div>
+        <div className="w-screen h-[70%] flex items-center justify-center">
+          <h1>Loading Map...</h1>
+        </div>
       )}
     </div>
 
@@ -581,6 +587,16 @@ useEffect(()=>{
             ride={Ride}
           />
         </div>
+        
+        {loading && (
+            <div className="fixed h-screen w-screen top-0 flex items-center justify-center z-50 transparent-bg text-black">
+              <div className="w-50 h-40 bg-gray-200 rounded-xl flex flex-col items-center justify-center">
+                <div className="w-12 h-12 border-4 border-gray-300 border-t-black rounded-full animate-spin"></div>
+                <h1 className="mt-4 font-semibold text-sm">Finding Your Captain</h1>
+              </div>
+            </div>
+          )}
+
       </div>
     </div>
   );

@@ -2,12 +2,13 @@ import React, { useContext, useState } from 'react'
 import { Link , useNavigate } from 'react-router-dom'
 import { CaptainDataContext } from '../context/CaptainContext';
 import axios from 'axios';
+import { DatabaseContext } from '../context/DatabaseContext';
 function CaptainSignUp() {
 
   const navigate = useNavigate() ;
 
   const {captain , setCaptain} = useContext(CaptainDataContext) ;
-
+  const {apiKey} = useContext(DatabaseContext)
   
   const [email,setEmail] = useState('') ; 
   const [firstname,setFirstname] = useState('') ; 
@@ -17,9 +18,11 @@ function CaptainSignUp() {
   const [vehicleType, setVehicleType] = useState('');
   const [vehicleColor, setVehicleColor] = useState('');
   const [vehicleCapacity, setVehicleCapacity] = useState('');
+  const [loading ,setLoading] = useState(false)
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true)
     const CaptainData = ({
       email,
       password,
@@ -36,11 +39,12 @@ function CaptainSignUp() {
 
     })
 
-    const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/captains/register`, CaptainData)
+    const response = await axios.post(`${apiKey}/captains/register`, CaptainData)
 
     if(response.status === 201){
       const data = response.data ;
       setCaptain(data.captain)
+      setLoading(false)
       localStorage.setItem('token' , data.token)
       navigate('/captain-home')
     }
@@ -154,6 +158,15 @@ function CaptainSignUp() {
       </div>
       <div className="">
         <p className='text-xs leading-tight '>This site is protected by reCAPTCHA and the <span className='underline'>Google Privacy Policy</span> and <span className='underline'>Terms of Service apply</span></p>
+      </div>
+      <div className='fixed top-0 left-0'>
+        {loading && (
+            <div className="fixed h-screen w-screen transparent-bg top-0 flex items-center justify-center z-50  text-black">
+              <div className="w-50 h-40 bg-gray-200 rounded-xl flex flex-col items-center justify-center">
+                <div className="w-12 h-12 border-4 border-gray-300 border-t-black rounded-full animate-spin"></div>
+              </div>
+            </div>
+          )}
       </div>
     </div>
   )

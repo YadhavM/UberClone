@@ -37,7 +37,6 @@ const Map = ({ center, zoom = 18 }) => {
       <RecenterMap center={center} />
 
       <Marker position={[center.lat, center.lon]}>
-        <Popup>You are here</Popup>
       </Marker>
     </MapContainer>
   )

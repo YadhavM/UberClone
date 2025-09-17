@@ -1,11 +1,13 @@
-import React from 'react'
+import React,{useContext} from 'react'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom';
+import { DatabaseContext } from '../context/DatabaseContext';
 function CaptainLogout() {
     const token = localStorage.getItem('token');
     const navigate = useNavigate()
+    const {apiKey} = useContext(DatabaseContext)
 
-    axios.get(`${import.meta.env.VITE_BASE_URL}/captains/logout`, {
+    axios.get(`${apiKey}/captains/logout`, {
         headers : {
             Authorization: `Bearer ${token}`
         }

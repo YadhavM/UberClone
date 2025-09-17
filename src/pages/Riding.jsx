@@ -36,7 +36,9 @@ const Riding = () => {
                     Location ? (
                         <Map center={Location}/>
                     ) : (
-                        <h1>Loading Map...</h1>
+                        <div className="w-screen h-[80%] flex items-center justify-center">
+                            <h1>Loading Map...</h1>
+                        </div>
                     )
                 }
             </div>

@@ -7,12 +7,14 @@ import RidePopUp from '../components/RidePopUp'
 import ConfirmRidePopUpPanel from '../components/ConfirmRidePopUpPanel'
 import { SocketContext } from '../context/SocketContext'
 import { CaptainDataContext } from '../context/CaptainContext'
+import { DatabaseContext } from '../context/DatabaseContext'
 import axios from 'axios'
 import LiveTracking from '../components/LiveTracking'
 
 function CaptainHome() {
   const { socket } = useContext(SocketContext)
   const { captain } = useContext(CaptainDataContext)
+  const {apiKey} = useContext(DatabaseContext)
 
   const logo = "https://imgs.search.brave.com/Qytw_NXKyFxwwc0vzLr3hbi8hrXtzDbeh_Ziku74uSI/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9sb2dv/cy13b3JsZC5uZXQv/d3AtY29udGVudC91/cGxvYWRzLzIwMjAv/MDUvVWJlci1Mb2dv/LTcwMHgzOTQucG5n"
 
@@ -118,7 +120,7 @@ function CaptainHome() {
 
   async function confirmRide() {
     try {
-      await axios.post(`${import.meta.env.VITE_BASE_URL}/rides/confirm`, {
+      await axios.post(`${apiKey}/rides/confirm`, {
         rideId: ride._id,
         captainId: captain._id
       }, {
@@ -145,7 +147,9 @@ function CaptainHome() {
           location ? (
             <LiveTracking location={location.lat ? location : { lat: 11.137547, lon: 75.890067 }} />
           ) : (
-            <h1>Loading Map... </h1>
+            <div className="w-screen h-[60%] flex items-center justify-center">
+                            <h1>Loading Map...</h1>
+                        </div>
           )
         }
       </div>

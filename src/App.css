@@ -3,3 +3,7 @@
 .scrollbar-hide::-webkit-scrollbar { 
 display: none;
 }
+
+.transparent-bg { 
+    background-color: rgba(159, 151, 155, 0.6);
+}

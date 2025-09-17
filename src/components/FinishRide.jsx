@@ -1,16 +1,18 @@
 import React,{useContext} from 'react'
 import { Link,useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import { DatabaseContext } from '../context/DatabaseContext'
 const FinishRide = (props) => {
 
     const navigate = useNavigate()
     const {setFinishRidePanel} = props
+    const {apiKey} = useContext(DatabaseContext)
 
     const finishRide = async (e)=>{
       e.preventDefault()
       
 
-      const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/rides/end-ride` , 
+      const response = await axios.post(`${apiKey}/rides/end-ride` , 
         {
           rideId : props.rideData._id
         },{

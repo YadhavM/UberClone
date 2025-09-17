@@ -1,11 +1,12 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom';
+import { DatabaseContext } from '../context/DatabaseContext';
 function Userlogout() {
-    
+    const {apiKey} = useContext(DatabaseContext)
     const token = localStorage.getItem('token');
     const navigate = useNavigate()
-    axios.get(`${import.meta.env.VITE_BASE_URL}/users/logout`,{
+    axios.get(`${apiKey}/users/logout`,{
         headers:{
             Authorization: `Bearer ${token}`
         }

@@ -2,28 +2,34 @@ import React, { useState , useContext} from 'react'
 import logo from '../images/logo.png'
 import { Link ,useNavigate} from 'react-router-dom'
 import {UserDataContext} from '../context/UserContext'
+import { DatabaseContext } from '../context/DatabaseContext'
 import axios from 'axios'
 function UserLogin() {
 
   const [email,setEmail] = useState('') ; 
   const [password,setPassword] = useState('') ; 
   const {user , setUser} = useContext(UserDataContext) ;
+  const {apiKey} = useContext(DatabaseContext)
+  const [loading ,setLoading] = useState(false)
+
   const navigate = useNavigate() ; 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true)
     const loginData = {email,password} ;
 
     const userData = {
       email : email , 
       password : password , 
     }
-    const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/users/login`, userData)
+    const response = await axios.post(`${apiKey}/users/login`, userData)
     
     if(response.status === 200){
 
       const data = response.data ; 
 
       setUser(data.user)
+      setLoading(false)
       localStorage.setItem('token' , data.token)
       navigate("/home") ; 
   
@@ -65,6 +71,15 @@ function UserLogin() {
         <Link to="/captain-login"className='w-full flex justify-center bg-[#8C5E58] py-3 px-4 text-white rounded font-semibold'>
           Sign in as Captain
         </Link>
+      </div>
+      <div className='fixed top-0 left-0'>
+          {loading && (
+            <div className="fixed h-screen w-screen top-0 flex items-center justify-center z-50 transparent-bg text-black">
+              <div className="w-50 h-40 bg-gray-200 rounded-xl flex flex-col items-center justify-center">
+                <div className="w-12 h-12 border-4 border-gray-300 border-t-black rounded-full animate-spin"></div>
+              </div>
+            </div>
+          )}
       </div>
     </div>
   )

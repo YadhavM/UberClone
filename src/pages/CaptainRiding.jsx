@@ -70,7 +70,9 @@ const CaptainRiding = (props) => {
               {initialLocation ? (
                 <LiveTracking location={Location} />
               ) : (
-                <div>Loading map...</div>
+                <div className="w-screen h-[80%] flex items-center justify-center">
+                    <h1>Loading Map...</h1>
+                </div>
               )}
             
           </div>

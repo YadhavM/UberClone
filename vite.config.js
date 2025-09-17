@@ -3,11 +3,11 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/Uber-clone-frontend/',
   plugins: [ 
     react(),
     tailwindcss()
   ],
+  base : "/uber-clone",
   server :{
     host : true , 
   }

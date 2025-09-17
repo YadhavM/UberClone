@@ -1,10 +1,12 @@
 import React,{useContext, useEffect,useState} from 'react'
 import { useNavigate } from 'react-router-dom'
 import {UserDataContext} from '../context/UserContext';
+import { DatabaseContext } from '../context/DatabaseContext';
 import axios from 'axios';
 function UserProtected({children}) {
     const navigate = useNavigate() ; 
     const {user , setUser} = useContext(UserDataContext) ;
+    const {apiKey} = useContext(DatabaseContext)
     const [loading , setLoading] = useState(true) ;
     useEffect(()=>{
         const token = localStorage.getItem('token') ;
@@ -13,7 +15,7 @@ function UserProtected({children}) {
         }}
     )
 
-    axios.get(`${import.meta.env.VITE_BASE_URL}/users/profile`,{
+    axios.get(`${apiKey}/users/profile`,{
         headers:{
             Authorization : `Bearer ${localStorage.getItem('token')}`
         }
@@ -29,7 +31,9 @@ function UserProtected({children}) {
 
     if(loading){
         return (
-            <div className="">Loading...</div>
+            <div className="h-screen w-screen flex items-center justify-center">
+                <div className="w-10 h-10 border-4 border-gray-300 border-t-black rounded-full animate-spin"></div>
+            </div>
         )
     }
     return(

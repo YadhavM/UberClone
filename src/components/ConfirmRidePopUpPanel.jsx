@@ -1,8 +1,9 @@
 import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
-import React, { useRef ,useState,useEffect } from 'react'
+import React, { useRef ,useState,useEffect ,useContext} from 'react'
 import { Link,useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import { DatabaseContext } from '../context/DatabaseContext'
 
 
 const ConfirmRidePopUpPanel = (props) => {
@@ -11,11 +12,12 @@ const ConfirmRidePopUpPanel = (props) => {
 
     const {setConfirmRidePopUp,setRidePopUpPanel , Location} = props 
     const [otp,setOtp] = useState('')
+    const {apiKey} = useContext(DatabaseContext)
 
     const SubmitHandler = async (e) => {
       e.preventDefault()
       try {
-        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/rides/start-ride`, {
+        const response = await axios.get(`${apiKey}/rides/start-ride`, {
           params : {
             rideId : props.ride._id , 
             otp : otp 
