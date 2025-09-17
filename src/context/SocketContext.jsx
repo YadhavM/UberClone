@@ -1,9 +1,10 @@
 import React, { createContext, useContext, useEffect, useRef } from "react";
 import { io } from "socket.io-client";
-
+import { DatabaseContext } from "./DatabaseContext";
 export const SocketContext = createContext()
 
-const socket = io(`${import.meta.env.VITE_BASE_URL}`)
+const {apiKey} = useContext(DatabaseContext)
+const socket = io(`${apiKey}`)
 
 const SocketProvider = ({ children }) => {
   useEffect(()=>{
