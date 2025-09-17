@@ -3,10 +3,13 @@ import { io } from "socket.io-client";
 import { DatabaseContext } from "./DatabaseContext";
 export const SocketContext = createContext()
 
-const {apiKey} = useContext(DatabaseContext)
-const socket = io(`${apiKey}`)
+
+
 
 const SocketProvider = ({ children }) => {
+
+  const {apiKey} = useContext(DatabaseContext)
+  const socket = io(`${apiKey}`)
   useEffect(()=>{
     socket.on('connect', ()=>{
         console.log('Connected to server')
