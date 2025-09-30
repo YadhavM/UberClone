@@ -3,7 +3,7 @@ import { useDrag } from '@use-gesture/react';
 import gsap from 'gsap';
 const ConfirmRide = (props) => {
   
-  const {fare,vehicleImage,setVehiclePanel,setLookingForDriverPanel,setConfirmRidePanel,confirmRidePanel,confirmRidePanelRef} = props
+  const {fare,vehicleImage,setVehiclePanel,setLookingForDriverPanel,setConfirmRidePanel,confirmRidePanel,confirmRidePanelRef,} = props
 
   const bind = useDrag(
     ({ movement: [, my], last }) => {
@@ -42,6 +42,9 @@ const ConfirmRide = (props) => {
     },
     { axis: "y" }
   );
+
+ 
+
   return (
     <div className='p-0 m-0 overflow-y-scroll scrollbar-hide '>
 
@@ -101,7 +104,7 @@ const ConfirmRide = (props) => {
                 </div>
                   <div className=' w-full pb-4 border-b-3  border-b-gray-200 '>
                     <h2 className='text-lg font-bold'>${fare?.fare?.[props.vehicleType] ?? '--'}</h2>
-                    <p className='text-sm'>Koadikanal,TamilNadu,Kearla</p>
+                    <p className='text-sm'>Cash , cash </p>
                   </div>
             </div>
             {/*Additional Space*/}
@@ -120,12 +123,12 @@ const ConfirmRide = (props) => {
         </div>
 
         {/*Choose Vehicle button section*/}
-        <div className='w-full h-15 absolute bg-white bottom-0 flex items-center justify-center'>
+        <div className='w-full h-15 absolute bg-white bottom-0 mb-20 flex items-center justify-center'>
             <button 
               className='bg-green-700 text-white font-semibold px-4 py-2 rounded-md'
               onClick={()=>{
                 setConfirmRidePanel(false)
-                setLookingForDriverPanel(true)
+                setLookingForDriverPanel(true);
                 props.createRide()
               }}
               >

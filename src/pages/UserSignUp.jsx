@@ -12,15 +12,21 @@ function UserSignUp() {
   const [lastname,setLastname] = useState('') ; 
   const [password,setPassword] = useState('') ;
   const [loading ,setLoading] = useState(false)
+  const [errors,setErrors] = useState(null)
 
   const navigate = useNavigate() ;
 
   const {user , setUser} = useContext(UserDataContext) ;
   const {apiKey} = useContext(DatabaseContext)
+
   const handleSubmit = async (e) => {
+
     setLoading(true)
+
     e.preventDefault();
-    const newUser = {
+    
+    try { 
+      const newUser = {
       email : email,
       password : password,
       fullname :{
@@ -31,7 +37,7 @@ function UserSignUp() {
 
     if(response.status === 201){
       const data = response.data ;
-
+      
       setUser(data.user)
       setLoading(false)
       localStorage.setItem('token' , data.token)
@@ -40,10 +46,20 @@ function UserSignUp() {
 
     setEmail('');
     setPassword('');
+    }catch(error) { 
+      if(error.response.status == 400) { 
+        const errors = error.response.data
+        setLoading(false)
+        errors.message ? setErrors(errors.message) : setErrors(errors.errors[0].msg)
+      }
+    }
+
   };
   
   return (
+
     <div className='p-7 flex h-screen flex-col justify-between'>
+
       <div className="">
             <img src={logo} alt="" className='w-20 ' />
           <form action="" onSubmit={(e)=>{
@@ -89,10 +105,19 @@ function UserSignUp() {
             id="" required 
             placeholder='password'
             className='rounded bg-[#eeeeee] w-full px-4 py-2  text-lg placeholder:text-base mb-10 focus:outline-none '/>
+              {
+                  errors ? (
+                    <div className="w-full items-center justify-center flex mb-3 text-red-500 text-center">
+                      <p className='items-center justify-center'>{errors}</p>
+                    </div>
+                  ) : ''
+              }
             <button className='bg-[#111] text-[#fff] font-semibold w-full py-2 px-4 rounded mb-2'>Create Account</button>
+              
             <p className='text-center'>Already have an account ? <Link to="/login" className='text-blue-600'>Login to Uber</Link></p>
           </form>
       </div>
+
       <div className="">
         <p className='text-xs leading-tight '>By proceding you consent to get calls , WhatsApp or SMS message, including by automated means, from Uber and its affiliates to the email Provided</p>
       </div>
@@ -106,7 +131,9 @@ function UserSignUp() {
             </div>
           )}
       </div>
+
     </div>
+    
   )
 }
 

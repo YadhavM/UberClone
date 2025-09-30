@@ -11,35 +11,48 @@ function UserLogin() {
   const {user , setUser} = useContext(UserDataContext) ;
   const {apiKey} = useContext(DatabaseContext)
   const [loading ,setLoading] = useState(false)
+  const [errors,setErrors] = useState(null)
 
   const navigate = useNavigate() ; 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true)
-    const loginData = {email,password} ;
-
-    const userData = {
-      email : email , 
-      password : password , 
-    }
-    const response = await axios.post(`${apiKey}/users/login`, userData)
     
-    if(response.status === 200){
+    try {
+      const loginData = {email,password} ;
 
-      const data = response.data ; 
+        const userData = {
+          email : email , 
+          password : password , 
+        }
+        const response = await axios.post(`${apiKey}/users/login`, userData)
+        
+        if(response.status === 200){
 
-      setUser(data.user)
-      setLoading(false)
-      localStorage.setItem('token' , data.token)
-      navigate("/home") ; 
-  
-    setEmail('');
-    setPassword('');
-  }
+          const data = response.data ; 
+
+          setUser(data.user)
+          setLoading(false)
+          localStorage.setItem('token' , data.token)
+          navigate("/home") ; 
+      
+        setEmail('');
+        setPassword('');
+      }
+    }catch(error) { 
+      if(error.response.status == 400) { 
+        const errors = error.response.data
+        setLoading(false)
+        errors.message ? setErrors(errors.message) : setErrors(errors.errors[0].msg)
+        
+      }
+    }
 }
 
   return (
-    <div className='p-7 flex h-screen flex-col justify-between'>
+    <div className='p-7 pb-20 flex h-screen flex-col justify-between'>
+
       <div className="">
             <img src={logo} alt="" className='w-20 mb-5' />
           <form action="" onSubmit={(e)=>{
@@ -63,15 +76,28 @@ function UserLogin() {
             id="" required 
             placeholder='password'
             className='rounded bg-[#eeeeee] w-full px-4 py-2  text-lg placeholder:text-base mb-10 focus:outline-none '/>
+              {
+                errors ? (
+                  <div className="w-full items-center justify-center flex mb-3 text-red-500 text-center">
+                    <p className='items-center justify-center'>{errors}</p>
+                  </div>
+                ) : ''
+              }
+              
+
             <button className='bg-[#111] text-[#fff] font-semibold w-full py-2 px-4 rounded mb-2'>Login to uber</button>
             <p className='text-center'>New Here ? <Link to="/signup" className='text-blue-600'>Create an account</Link></p>
           </form>
+            
       </div>
+
+
       <div className="">
         <Link to="/captain-login"className='w-full flex justify-center bg-[#8C5E58] py-3 px-4 text-white rounded font-semibold'>
           Sign in as Captain
         </Link>
       </div>
+
       <div className='fixed top-0 left-0'>
           {loading && (
             <div className="fixed h-screen w-screen top-0 flex items-center justify-center z-50 transparent-bg text-black">
@@ -81,6 +107,7 @@ function UserLogin() {
             </div>
           )}
       </div>
+      
     </div>
   )
 }

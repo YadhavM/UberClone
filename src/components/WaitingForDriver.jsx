@@ -11,7 +11,7 @@ const WaitingForDriver = (props) => {
           <div className='w-full px-2 py-2 border-b-2 border-b-gray-200 flex justify-between items-center'>
               
                 <h1 className='text-xl font-semibold py-2'>Meet at the pickup point</h1>
-                <div className="px-4 py-2 bg-black  flex flex-col items-center " >
+                <div className={`px-4 py-2  bg-black  flex flex-col items-center ${WaitingForDriver ? `` : `hidden`}`} >
                     <h2 className='text-white text-lg font-semibold'>{Math.round(props.ride?.duration)}</h2>
                     <h3 className='text-white font-semibold'>min</h3>
                 </div>

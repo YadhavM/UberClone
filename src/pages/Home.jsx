@@ -13,6 +13,8 @@ import { SocketContext } from "../context/SocketContext";
 import {UserDataContext} from '../context/UserContext'
 import Map from '../components/Map'
 import { DatabaseContext } from "../context/DatabaseContext";
+import UberGoImage from '../../public/images/download.png'
+import UberVanImage from '../../public/images/premium.png'
 
 function Home() {
   const logo =
@@ -40,6 +42,8 @@ function Home() {
   const [Ride , setRide] = useState(null)
   const [locationState, setLocationState] = useState(null)
   const [loading , setLoading] = useState(false)
+  const [NoDriverFound, setNoDriverFound] = useState(false)
+  const [Errors,setErrors] = useState(null)
 
   // refs
   const bottomPanelRef = useRef(null);
@@ -58,18 +62,18 @@ function Home() {
   const debounceTimerRef = useRef(null);
 
   // images
-  const UberGoImage =
-    "https://imgs.search.brave.com/TKzcq4TXbGqQUdpiEcg9FgywtpYVK37LZka0tX-8t24/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9zdGF0/aWMudmVjdGVlenku/Y29tL3N5c3RlbS9y/ZXNvdXJjZXMvdGh1/bWJuYWlscy8wMjkv/OTQ2LzIwMS9zbWFs/bC93aGl0ZS1tb2Rl/cm4tY2FyLWlzb2xh/dGVkLW9uLXRyYW5z/cGFyZW50LWJhY2tn/cm91bmQtM2QtcmVu/ZGVyaW5nLWlsbHVz/dHJhdGlvbi1mcmVl/LXBuZy5wbmc";
   const UberMotoImage =
     "https://user-gen-media-assets.s3.amazonaws.com/gpt4o_images/96091ab3-c266-472a-99b5-b78dda3b50cd.png";
-  const UberVanImage =
-    "https://imgs.search.brave.com/_sATx4OPlO8FBP2PUr5GsBo2PT7V9J3-JMMe7eTQhBI/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9zdGF0/aWMudmVjdGVlenku/Y29tL3N5c3RlbS9y/ZXNvdXJjZXMvdGh1/bWJuYWlscy8wNDgv/NTk1LzE4NS9zbWFs/bC9tb2Rlcm4tY2Fy/LWlzb2xhdGVkLW9u/LWJhY2tncm91bmQt/M2QtcmVuZGVyaW5n/LWlsbHVzdHJhdGlv/bi1wbmcucG5n";
   const UberAutoImage =
     "https://user-gen-media-assets.s3.amazonaws.com/gpt4o_images/474bbf7d-56af-4649-9f19-cfadc1a2e696.png";
+
+
 
   const submitHandler = (e) => {
     e.preventDefault();
   };
+
+
 
   // GSAP
   useGSAP(() => {
@@ -179,8 +183,7 @@ function Home() {
     [WaitingForDriverPanel]
   );
 
-  ///useEffect
-
+  //useEffects
 useEffect(()=>{
     if(!user) {
       return
@@ -246,6 +249,18 @@ useEffect(()=>{
             socket.off('ride-confirmed', handleRideConfirmed);
         }; 
 },[socket,navigate])
+
+useEffect(() => {
+    if (!LookingForDriverPanel) return;
+
+    const id = setTimeout(() => {
+      if (LookingForDriverPanel) {
+        setNoDriverFound(true)
+      }
+    }, 15000);
+
+    return () => clearTimeout(id);
+},[LookingForDriverPanel]);
 
 
   // BINDS
@@ -373,8 +388,11 @@ useEffect(()=>{
 
 
   async function findTrip() {
+
     setLoading(true)
-    const response = await axios.get(`${apiKey}/rides/get-fare`,{
+    
+    try { 
+      const response = await axios.get(`${apiKey}/rides/get-fare`,{
       params :{
         pickup , 
         destination
@@ -382,11 +400,18 @@ useEffect(()=>{
       headers : {
         Authorization : `Bearer ${localStorage.getItem('token')}`
       }
-    })
-    setFare(response.data)
-    setLoading(false)
-    setPanelOpen(false);
-    setVehiclePanel(true);
+      })
+      setFare(response.data)
+      setLoading(false)
+      setPanelOpen(false);
+      setVehiclePanel(true);
+    }catch(error) { 
+      
+      const errors = error.response.data.errors[0]
+      
+      setErrors(errors)
+      setLoading(false)
+    }
   }
 
 
@@ -411,7 +436,9 @@ useEffect(()=>{
 
   return (
     <div className="h-screen relative overflow-hidden">
+
       <img src={logo} alt="" className="w-25 absolute left-5 top-5" />
+
       <button
         onClick={()=>{
           navigate('/user-logout')
@@ -444,7 +471,9 @@ useEffect(()=>{
             <div className=" line2 absolute w-10 top-1/21 h-1 bg-gray-300 left-[43%] rounded-sm mb-4"></div>
           ) : null}
 
+          
           <h4 className="text-3xl font-semibold">Find a trip</h4>
+          
 
           <form
             onSubmit={(e) => {
@@ -457,7 +486,9 @@ useEffect(()=>{
               <div className="bg-black w-2 h-3  mt-1"></div>
             </div>
 
-            <input
+            <div className="">
+
+              <input
               type="text"
               ref={pickupRef}
               placeholder="Add a pickup location"
@@ -470,6 +501,7 @@ useEffect(()=>{
               onChange={(e) => {
                 setPickup(e.target.value);
                 debouncedGetSuggestions(e.target.value);
+                setErrors('')
               }}
               onMouseDown={(e) => {
                 if (!pickstart) {
@@ -479,29 +511,46 @@ useEffect(()=>{
               }}
               className="bg-[#eeeeee] w-full px-12 py-2 rounded-lg text-base mb-3 mt-5 focus:outline-none"
             />
+            <i className={`ri-close-fill absolute z-10 top-20 right-[10%] ${panelOpen ? '' : 'hidden'}`} onClick={()=>setPickup('')}></i>
+            </div>
 
-            <input
-              type="text"
-              ref={destinationRef}
-              placeholder="Set Destination"
-              value={destination}
-              onClick={() => {
-                setPanelOpen(true);
-                setActiveInput("destination");
-                setSuggestions([]);
-              }}
-              onChange={(e) => {
-                setDestination(e.target.value);
-                debouncedGetSuggestions(e.target.value);
-              }}
-              onMouseDown={(e) => {
-                if (!pickstart) {
-                  e.preventDefault();
-                  setPickStart(!pickstart);
-                }
-              }}
-              className="bg-[#eeeeee] w-full px-12 py-2 rounded-lg text-base focus:outline-none"
-            />
+            <div className="">
+                <input
+                type="text"
+                ref={destinationRef}
+                placeholder="Set Destination"
+                value={destination}
+                onClick={() => {
+                  setPanelOpen(true);
+                  setActiveInput("destination");
+                  setSuggestions([]);
+                }}
+                onChange={(e) => {
+                  setDestination(e.target.value);
+                  debouncedGetSuggestions(e.target.value);
+                  setErrors('')
+                }}
+                onMouseDown={(e) => {
+                  if (!pickstart) {
+                    e.preventDefault();
+                    setPickStart(!pickstart);
+                  }
+                }}
+                className="bg-[#eeeeee] w-full px-12 py-2 rounded-lg text-base focus:outline-none"
+              />
+              <i className={`ri-close-fill absolute z-10 top-35 right-[10%] ${panelOpen ? '' : 'hidden'}`} onClick={()=>setDestination('')}></i>
+            </div>
+
+          
+          <div>
+            {
+            Errors ?(
+              <div className="flex w-full items-center justify-center m-2 text-red-500">
+                <p>{Errors.msg}</p>
+              </div>
+            ) : ''
+          }
+          </div>
 
             <button
               type="button"
@@ -511,6 +560,7 @@ useEffect(()=>{
             >
               Find Trip
             </button>
+            
           </form>
         </div>
 
@@ -551,6 +601,7 @@ useEffect(()=>{
             vehicleType={vehicleType}
             destination={destination}
             vehicleImage={vehicleImage}
+            LookingForDriverPanel={LookingForDriverPanel}
             setVehiclePanel={setVehiclePanel}
             confirmRidePanelRef={confirmRidePanelRef}
             confirmRidePanel={confirmRidePanel}
@@ -577,7 +628,7 @@ useEffect(()=>{
         </div>
 
         <div
-          className="fixed z-12 bottom-0 bg-white translate-y-full h-[70%] pt-4 w-full flex flex-col  rounded-t-2xl "
+          className="fixed z-12 bottom-0 bg-white translate-y-[200%] h-[70%] pt-4 w-full flex flex-col  rounded-t-2xl "
           ref={WaitingForDriverPanelRef}
         >
           <WaitingForDriver
@@ -592,10 +643,33 @@ useEffect(()=>{
             <div className="fixed h-screen w-screen top-0 flex items-center justify-center z-50 transparent-bg text-black">
               <div className="w-50 h-40 bg-gray-200 rounded-xl flex flex-col items-center justify-center">
                 <div className="w-12 h-12 border-4 border-gray-300 border-t-black rounded-full animate-spin"></div>
-                <h1 className="mt-4 font-semibold text-sm">Finding Your Captain</h1>
+                <h1 className="mt-4 font-semibold text-sm">Creating Your Ride</h1>
               </div>
             </div>
           )}
+
+          {
+            NoDriverFound && (
+              <div className="w-full h-full z-20 fixed top-0 left-0 flex items-center justify-center text-black transparent-bg">
+                <div className="flex items-center justify-center flex-col p-10 rounded-2xl bg-white gap-5">
+                  <h1 className="text-lg ">Sorry, No Driver Found</h1>
+                  <button 
+                  className="bg-green-700 px-4 py-2 font-semibold text-white rounded-xl" 
+                  onClick={()=>{
+                    setLookingForDriverPanel(false)
+                    setNoDriverFound(false)
+                    setDestination("")
+                    setPickup("")
+                  }}
+                  > Go To Home
+                  
+                  </button>
+                </div>
+              </div>
+            )
+          }
+
+        
 
       </div>
     </div>

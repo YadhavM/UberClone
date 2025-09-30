@@ -19,49 +19,63 @@ function CaptainSignUp() {
   const [vehicleColor, setVehicleColor] = useState('');
   const [vehicleCapacity, setVehicleCapacity] = useState('');
   const [loading ,setLoading] = useState(false)
+  const [errors,setErrors] = useState(null)
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true)
-    const CaptainData = ({
-      email,
-      password,
-      fullname :{
-        firstname,
-        lastname
-      },
-      vehicle : { 
-        color : vehicleColor,
-        plate : vehiclePlate,
-        capacity : vehicleCapacity,
-        vehicleType,
-      },
+    
+    try{
+            const CaptainData = ({
+            email,
+            password,
+            fullname :{
+              firstname,
+              lastname
+            },
+            vehicle : { 
+              color : vehicleColor,
+              plate : vehiclePlate,
+              capacity : vehicleCapacity,
+              vehicleType,
+            },
 
-    })
+          })
 
-    const response = await axios.post(`${apiKey}/captains/register`, CaptainData)
+          const response = await axios.post(`${apiKey}/captains/register`, CaptainData)
 
-    if(response.status === 201){
-      const data = response.data ;
-      setCaptain(data.captain)
-      setLoading(false)
-      localStorage.setItem('token' , data.token)
-      navigate('/captain-home')
+          if(response.status === 201){
+            const data = response.data ;
+            setCaptain(data.captain)
+            setLoading(false)
+            localStorage.setItem('token' , data.token)
+            navigate('/captain-home')
+          }
+
+          setEmail('');
+          setFirstname('')
+          setPassword('');
+          setVehicleType('')
+          setVehiclePlate('')
+          setLastname('')
+          setVehicleColor('')
+          setVehicleCapacity('')
+    }catch(error) { 
+      if(error.response.status == 400) { 
+        const errors = error.response.data
+        setLoading(false)
+        errors.message ? setErrors(errors.message) : setErrors(errors.errors[0].msg)
+        
+      }
     }
 
-    setEmail('');
-    setFirstname('')
-    setPassword('');
-    setVehicleType('')
-    setVehiclePlate('')
-    setLastname('')
-    setVehicleColor('')
-    setVehicleCapacity('')
+
   };
 
 
   return (
     <div className='p-7 flex h-screen flex-col justify-between'>
+
       <div className="">
             <img src={'https://imgs.search.brave.com/Xr5AE-qF9u_eA3dArDHLnzd2OmEM7V44OSXOCtcAsuk/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9mcmVl/bG9nb3BuZy5jb20v/aW1hZ2VzL2FsbF9p/bWcvMTY1OTc2MTQy/NXViZXItZHJpdmVy/LWxvZ28tcG5nLnBu/Zw'} alt="" className='w-10 mb-2 ' />
           <form action="" onSubmit={(e)=>{handleSubmit(e)}}>
@@ -152,13 +166,22 @@ function CaptainSignUp() {
                   <option value="Van">Van</option>
                 </select>
             </div>
+              {
+                  errors ? (
+                    <div className="w-full items-center justify-center flex mb-3 text-red-500 text-center">
+                      <p className='items-center justify-center'>{errors}</p>
+                    </div>
+                  ) : ''
+              }
             <button className='bg-[#111] text-[#fff] font-semibold w-full py-2 px-4 rounded mb-2'>Create Captain Account</button>
             <p className='text-center text-[15px]'>Already have an account ? <Link to="/captain-login" className='text-blue-600'>Login as Captain</Link></p>
           </form>
       </div>
+
       <div className="">
         <p className='text-xs leading-tight '>This site is protected by reCAPTCHA and the <span className='underline'>Google Privacy Policy</span> and <span className='underline'>Terms of Service apply</span></p>
       </div>
+
       <div className='fixed top-0 left-0'>
         {loading && (
             <div className="fixed h-screen w-screen transparent-bg top-0 flex items-center justify-center z-50  text-black">
@@ -168,6 +191,7 @@ function CaptainSignUp() {
             </div>
           )}
       </div>
+
     </div>
   )
 }

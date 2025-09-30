@@ -1,18 +1,15 @@
 import React,{useEffect,useRef} from 'react'
 import { useDrag } from "@use-gesture/react";
 import gsap from 'gsap'
+import UberGoImage from '../../public/images/download.png'
+import UberVanImage from '../../public/images/premium.png'
 
 const VehiclePanel = (props) => {
     const vehiclePanelRef = useRef(null)
     const {fare,setConfirmRidePanel,setVehicleImage} = props
     
-
-      const UberGoImage =
-    "https://imgs.search.brave.com/TKzcq4TXbGqQUdpiEcg9FgywtpYVK37LZka0tX-8t24/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9zdGF0/aWMudmVjdGVlenku/Y29tL3N5c3RlbS9y/ZXNvdXJjZXMvdGh1/bWJuYWlscy8wMjkv/OTQ2LzIwMS9zbWFs/bC93aGl0ZS1tb2Rl/cm4tY2FyLWlzb2xh/dGVkLW9uLXRyYW5z/cGFyZW50LWJhY2tn/cm91bmQtM2QtcmVu/ZGVyaW5nLWlsbHVz/dHJhdGlvbi1mcmVl/LXBuZy5wbmc";
   const UberMotoImage =
     "https://user-gen-media-assets.s3.amazonaws.com/gpt4o_images/96091ab3-c266-472a-99b5-b78dda3b50cd.png";
-  const UberVanImage =
-    "https://imgs.search.brave.com/_sATx4OPlO8FBP2PUr5GsBo2PT7V9J3-JMMe7eTQhBI/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9zdGF0/aWMudmVjdGVlenku/Y29tL3N5c3RlbS9y/ZXNvdXJjZXMvdGh1/bWJuYWlscy8wNDgv/NTk1LzE4NS9zbWFs/bC9tb2Rlcm4tY2Fy/LWlzb2xhdGVkLW9u/LWJhY2tncm91bmQt/M2QtcmVuZGVyaW5n/LWlsbHVzdHJhdGlv/bi1wbmcucG5n";
   const UberAutoImage =
     "https://user-gen-media-assets.s3.amazonaws.com/gpt4o_images/474bbf7d-56af-4649-9f19-cfadc1a2e696.png";
 
@@ -72,7 +69,7 @@ const VehiclePanel = (props) => {
             }}
           >
             <div className="w-15 flex items-center justify-center">
-              <img className="w-15" src={UberGoImage} alt="" />
+              <img className="w-15 ml-2" src={UberGoImage} alt="" />
             </div>
             <div className="flex flex-col py-3 w-50 pl-10" onClic>
               <h4 className="text-lg font-medium">
@@ -98,7 +95,7 @@ const VehiclePanel = (props) => {
             }}
           >
             <div className="w-15 flex items-center justify-center">
-              <img className="w-10" src={UberMotoImage} alt="" />
+              <img className="w-12" src={UberMotoImage} alt="" />
             </div>
             <div className="flex flex-col py-3 pl-10 w-50">
               <h4 className="text-lg font-medium">
@@ -124,7 +121,7 @@ const VehiclePanel = (props) => {
             }}
           >
             <div className="w-15 flex items-center justify-center">
-              <img className="w-15 scale-[1.3]" src={UberVanImage} alt="" />
+              <img className="w-15 scale-[1.1] ml-5" src={UberVanImage} alt="" />
             </div>
             <div className="flex flex-col py-3 pl-10 w-50">
               <h4 className="text-lg font-medium">
