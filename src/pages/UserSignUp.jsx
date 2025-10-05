@@ -47,11 +47,11 @@ function UserSignUp() {
     setEmail('');
     setPassword('');
     }catch(error) { 
-      if(error.response.status == 400) { 
+      
         const errors = error.response.data
         setLoading(false)
         errors.message ? setErrors(errors.message) : setErrors(errors.errors[0].msg)
-      }
+      
     }
 
   };

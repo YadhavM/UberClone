@@ -12,11 +12,9 @@ const SocketProvider = ({ children }) => {
   const socket = io(`${apiKey}`)
   useEffect(()=>{
     socket.on('connect', ()=>{
-        console.log('Connected to server')
     })
     
     socket.on('disconnect',()=>{
-        console.log('Disconnected from server')
     })
     return ()=>{
         socket.disconnect()

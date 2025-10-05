@@ -7,7 +7,7 @@ function CaptainLogin() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading ,setLoading] = useState(false)
-  const {captain,setCaptain} = React.useContext(CaptainDataContext) ;
+  const {captain,setCaptain} = useContext(CaptainDataContext) ;
   const {apiKey} = useContext(DatabaseContext)
   const [errors,setErrors] = useState(null)
 
@@ -34,11 +34,11 @@ function CaptainLogin() {
     setEmail('');
     setPassword('');
     }catch(error) { 
-      if(error.response.status == 400) { 
+      
         const errors = error.response.data
         setLoading(false)
         errors.message ? setErrors(errors.message) : setErrors(errors.errors[0].msg)
-      }
+      
     }
   };
 

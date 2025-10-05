@@ -1,8 +1,8 @@
 import React,{useEffect,useRef} from 'react'
 import { useDrag } from "@use-gesture/react";
 import gsap from 'gsap'
-import UberGoImage from '../../public/images/download.png'
-import UberVanImage from '../../public/images/premium.png'
+import UberGoImage from '../images/download.png'
+import UberVanImage from '../images/premium.png'
 
 const VehiclePanel = (props) => {
     const vehiclePanelRef = useRef(null)

@@ -8,6 +8,7 @@ import ConfirmRidePopUpPanel from '../components/ConfirmRidePopUpPanel'
 import { SocketContext } from '../context/SocketContext'
 import { CaptainDataContext } from '../context/CaptainContext'
 import { DatabaseContext } from '../context/DatabaseContext'
+import { Switch } from '@headlessui/react'
 import axios from 'axios'
 import LiveTracking from '../components/LiveTracking'
 
@@ -22,6 +23,8 @@ function CaptainHome() {
   const [ConfirmRidePopUp, setConfirmRidePopUp] = useState(false)
   const [ride, setRide] = useState(null)
   const [location, setLocation] = useState({})
+  const [Online, setOnline] = useState(false)
+  const [loading , setLoading] = useState(false)
 
   const RidePopUpPanelRef = useRef(null)
   const ConfirmRidePopUpRef = useRef(null)
@@ -66,9 +69,24 @@ function CaptainHome() {
   const locationInterval = setInterval(updateLocation, 10000)
 
   return () => clearInterval(locationInterval)
-}, [socket, captain._id])
+  }, [socket, captain._id])
 
-  // GSAP animations for RidePopUp
+ useEffect(() => {
+    const handleNewRide = (data) => {
+      setRide(data)
+      setRidePopUpPanel(true)
+    }
+    socket.on('new-ride', handleNewRide)
+    return () => socket.off('new-ride', handleNewRide)
+  }, [socket])
+
+  useEffect(()=>{
+    setOnline(false)
+    toggleStatus(false)
+  },[])
+
+
+  // GSAP
   useGSAP(() => {
     if (RidePopUpPanel) {
       gsap.to(RidePopUpPanelRef.current, {
@@ -87,7 +105,6 @@ function CaptainHome() {
     }
   }, [RidePopUpPanel])
 
-  // GSAP animations for ConfirmRidePopUp
   useGSAP(() => {
     if (ConfirmRidePopUp) {
       gsap.to(ConfirmRidePopUpRef.current, {
@@ -108,15 +125,23 @@ function CaptainHome() {
     }
   }, [ConfirmRidePopUp])
 
-  // Listen for new rides
-  useEffect(() => {
-    const handleNewRide = (data) => {
-      setRide(data)
-      setRidePopUpPanel(true)
-    }
-    socket.on('new-ride', handleNewRide)
-    return () => socket.off('new-ride', handleNewRide)
-  }, [socket])
+
+
+ async function toggleStatus(next) {
+
+  setLoading(true)
+  const response = await axios.post(
+    `${apiKey}/captains/toggle-status`,
+    { status: next ? 'active' : 'inactive' },
+    { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
+  );
+
+  if(response) { 
+    setLoading(false)
+  }
+  return response.data;
+
+}
 
   async function confirmRide() {
     try {
@@ -137,9 +162,32 @@ function CaptainHome() {
 
       {/* Logo and logout */}
       <img src={logo} alt="" className="w-25 absolute left-5 top-5 z-20" />
-      <Link to="/captain-logout" className='absolute right-5 top-5 px-4 py-3 bg-white rounded-full z-20'>
-        <i className="text-xl font-semibold ri-logout-box-r-line"></i>
-      </Link>
+      <div className='absolute flex right-5 top-5  bg-white rounded-full z-20 py-3 px-5 gap-6 items-center'>
+          <h3 className='font-semibold text-base'>{Online ? "Online" : "Offline"}</h3>
+          <div className=''>
+            
+              <Switch
+                checked={Online}
+                onChange={async (next) => {
+                  try {
+                    const data = await toggleStatus(next); // returns canonical status string
+                    // Map enum -> boolean
+                    setOnline(data.status === 'active');
+                  } catch {
+                    // On failure, keep previous value (no flip), or show an error
+                    // Optionally, revert UI if you optimistically updated earlier
+                  }
+                }}
+                className="group inline-flex h-6 w-11 items-center rounded-full bg-gray-300 transition data-checked:bg-green-400"
+              >
+                <span className="size-4 translate-x-1 rounded-full bg-white transition group-data-checked:translate-x-6" />
+              </Switch>
+              
+          </div>
+          <Link to="/captain-logout" className=''>
+          <i className="text-xl font-semibold ri-logout-box-r-line"></i>
+          </Link>
+      </div>
 
       {/* Map */}
       <div className="relative w-full h-3/5 z-0">
@@ -178,6 +226,14 @@ function CaptainHome() {
           setRidePopUpPanel={setRidePopUpPanel}
         />
       </div>
+
+      {loading && (
+            <div className="fixed h-screen w-screen top-0 flex items-center justify-center z-50 transparent-bg text-black">
+              
+                <div className="w-12 h-12 border-4 border-gray-300 border-t-black rounded-full animate-spin"></div>
+              
+            </div>
+          )}
 
     </div>
   )

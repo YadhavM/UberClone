@@ -9,6 +9,7 @@ function LocationSearchPanel(props) {
     activeInput,
     setPickup,
     setDestination,
+    setLocationPicked
   } = props;
 
   const handleSuggestionClick = (displayName) => {
@@ -32,7 +33,10 @@ function LocationSearchPanel(props) {
             <div
               key={index}
               className="flex items-center justify-start gap-6 mb-4 border-2 border-transparent active:border-black rounded-md py-3 px-3"
-              onClick={() => handleSuggestionClick(`${props.name} , ${props.state}, ${props.country}`)}
+              onClick={() => {
+                handleSuggestionClick(`${props.name} , ${props.state}, ${props.country}`)
+                setLocationPicked(true)
+                }}
             >
               <h2 className="bg-gray-200 flex items-center justify-center w-10 h-8 rounded-full px-2">
                 {props.osm_key === 'aeroway' ? (

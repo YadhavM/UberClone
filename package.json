@@ -16,6 +16,7 @@
   "dependencies": {
     "@amraneze/osm-autocomplete": "^0.0.7-beta",
     "@gsap/react": "^2.1.2",
+    "@headlessui/react": "^2.2.9",
     "@tailwindcss/vite": "^4.1.11",
     "@use-gesture/react": "^10.3.1",
     "axios": "^1.11.0",

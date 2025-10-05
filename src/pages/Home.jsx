@@ -13,8 +13,8 @@ import { SocketContext } from "../context/SocketContext";
 import {UserDataContext} from '../context/UserContext'
 import Map from '../components/Map'
 import { DatabaseContext } from "../context/DatabaseContext";
-import UberGoImage from '../../public/images/download.png'
-import UberVanImage from '../../public/images/premium.png'
+import UberGoImage from '../images/download.png'
+import UberVanImage from '../images/premium.png'
 
 function Home() {
   const logo =
@@ -43,7 +43,8 @@ function Home() {
   const [locationState, setLocationState] = useState(null)
   const [loading , setLoading] = useState(false)
   const [NoDriverFound, setNoDriverFound] = useState(false)
-  const [Errors,setErrors] = useState(null)
+  const [Errors,setErrors] = useState("")
+  const [LocationPicked , setLocationPicked] = useState(false)
 
   // refs
   const bottomPanelRef = useRef(null);
@@ -72,8 +73,6 @@ function Home() {
   const submitHandler = (e) => {
     e.preventDefault();
   };
-
-
 
   // GSAP
   useGSAP(() => {
@@ -262,6 +261,11 @@ useEffect(() => {
     return () => clearTimeout(id);
 },[LookingForDriverPanel]);
 
+ useEffect(()=>{
+  setLocationPicked(LocationPicked)
+  },[LocationPicked])
+
+  
 
   // BINDS
   const bind = useDrag(
@@ -297,6 +301,7 @@ useEffect(() => {
     },
     { axis: "y" }
   );
+
   const bind2 = useDrag(
     ({ movement: [, my], last }) => {
       const targetRef = bottomPanelRef;
@@ -390,6 +395,12 @@ useEffect(() => {
   async function findTrip() {
 
     setLoading(true)
+
+    if(!LocationPicked) { 
+      setErrors("Select a location from the suggestions")
+      setLoading(false)
+      return
+    }
     
     try { 
       const response = await axios.get(`${apiKey}/rides/get-fare`,{
@@ -406,11 +417,12 @@ useEffect(() => {
       setPanelOpen(false);
       setVehiclePanel(true);
     }catch(error) { 
-      
-      const errors = error.response.data.errors[0]
+      setLoading(false)
+      setErrors("Unable to Fetch Locations")
+      const errors = error.response.data?.errors[0]
       
       setErrors(errors)
-      setLoading(false)
+      
     }
   }
 
@@ -497,6 +509,7 @@ useEffect(() => {
                 setPanelOpen(true);
                 setActiveInput("pickup");
                 setSuggestions([]);
+                setErrors('')
               }}
               onChange={(e) => {
                 setPickup(e.target.value);
@@ -524,6 +537,7 @@ useEffect(() => {
                   setPanelOpen(true);
                   setActiveInput("destination");
                   setSuggestions([]);
+                  setErrors('')
                 }}
                 onChange={(e) => {
                   setDestination(e.target.value);
@@ -546,7 +560,7 @@ useEffect(() => {
             {
             Errors ?(
               <div className="flex w-full items-center justify-center m-2 text-red-500">
-                <p>{Errors.msg}</p>
+                <p>{Errors.msg ? Errors.msg : Errors}</p>
               </div>
             ) : ''
           }
@@ -574,6 +588,7 @@ useEffect(() => {
             activeInput={activeInput}
             setPickup={setPickup}
             setDestination={setDestination}
+            setLocationPicked={setLocationPicked}
           />
         </div>
 
@@ -652,7 +667,7 @@ useEffect(() => {
             NoDriverFound && (
               <div className="w-full h-full z-20 fixed top-0 left-0 flex items-center justify-center text-black transparent-bg">
                 <div className="flex items-center justify-center flex-col p-10 rounded-2xl bg-white gap-5">
-                  <h1 className="text-lg ">Sorry, No Driver Found</h1>
+                  <h1 className="text-lg ">Sorry, No Driver Available</h1>
                   <button 
                   className="bg-green-700 px-4 py-2 font-semibold text-white rounded-xl" 
                   onClick={()=>{

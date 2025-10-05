@@ -1,10 +1,12 @@
-import React, { useEffect } from 'react'
+import React, { useContext, useEffect } from 'react'
 import logo from '../images/logo.png'
 import '../css/Home.css'
 import { Link } from 'react-router-dom'
+import { UserDataContext } from '../context/UserContext'
+import { CaptainDataContext } from '../context/CaptainContext'
 
 function Start() {
-  const token = localStorage.getItem('token')
+
   return (
     
     <div className='w-screen h-screen overflow-hidden'>
@@ -23,24 +25,12 @@ function Start() {
           <h2 className='text-2xl font-semibold'>Get started with Uber</h2>
 
                   <div className='w-full h-full flex justify-center py-4 px-2'>
-                      {
-                      !token ? (
+
                         <Link to='/login' className='flex items-center rounded justify-center w-full bg-black text-white py-3 px-3'>Continue →</Link>
-                      ) : (
-                        <Link to='/home' className='flex items-center rounded justify-center w-full bg-black text-white py-3 px-3'>Continue →</Link>
-                      )
-                      }
+
                   </div>
           </div>
       </div>
-
-      {/*
-      <div className='h-2/10 px-4 pt-2 py-6'>
-
-      
-                  
-
-              </div>*/ }
     </div>
   )
 }
