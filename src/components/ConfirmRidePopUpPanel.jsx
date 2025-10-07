@@ -11,8 +11,12 @@ const ConfirmRidePopUpPanel = (props) => {
   const navigate = useNavigate()
 
     const {setConfirmRidePopUp,setRidePopUpPanel , Location} = props 
-    const [otp,setOtp] = useState('')
     const {apiKey} = useContext(DatabaseContext)
+
+
+    const [otp,setOtp] = useState('')
+    const [Errors,setErrors] = useState('')
+    
 
     const SubmitHandler = async (e) => {
       e.preventDefault()
@@ -33,7 +37,8 @@ const ConfirmRidePopUpPanel = (props) => {
           navigate('/captain-riding',{state : {ride : props.ride , location: Location}})
         }
       } catch (error) {
-        console.error('Error starting ride:', error)
+        const data = error.response.data.errors[0].msg
+        setErrors(data)
       }
     };
 
@@ -94,6 +99,7 @@ const ConfirmRidePopUpPanel = (props) => {
         <div className=''>
           <form action="" className='p-3' onSubmit={SubmitHandler}>
             <div className='mt-5'>
+              {Errors && <p className='text-red-500 text-center mb-2'>{Errors}</p>}
               <input 
               type="number" 
               name="" 

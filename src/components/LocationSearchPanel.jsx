@@ -59,7 +59,11 @@ function LocationSearchPanel(props) {
 
       {/* extra space */}
       <div className="mb-4 w-full h-10"></div>
+      <div className="mb-4 w-full h-10"></div>
+      <div className="mb-4 w-full h-10"></div>
+      
     </div>
+    
   );
 }
 

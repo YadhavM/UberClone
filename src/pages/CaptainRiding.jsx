@@ -2,6 +2,7 @@ import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import React, { useRef ,useState,useEffect} from 'react'
 import { Link,useLocation  } from 'react-router-dom'
+import { useDrag } from '@use-gesture/react'
 import FinishRide from '../components/FinishRide'
 import LiveTracking from '../components/LiveTracking'
 
@@ -12,6 +13,7 @@ const CaptainRiding = (props) => {
   const [FinishRidePanel,setFinishRidePanel] = useState(false)
   const [initialLocation, setInitialLocation] = useState(null)
   const FinishRideRef= useRef(null)
+  
 
   const location = useLocation()
   const rideData = location.state?.ride
@@ -59,6 +61,40 @@ const CaptainRiding = (props) => {
     getInitialLocation()
   }, [Location])
 
+  const bind = useDrag(
+          ({ movement: [, my], last }) => {
+            const targetRef = FinishRideRef; // 👈 use correct ref
+            if (targetRef?.current) {
+              const clampedY = Math.max(0, my);
+      
+              if (!last) {
+                gsap.set(targetRef.current, { y: clampedY });
+              } else {
+                if (clampedY > 80) {
+                  gsap.to(targetRef.current, {
+                    y: "100%",
+                    duration: 0.3,
+                    ease: "power2.out",
+                    onComplete: () => {
+                      if (FinishRidePanel) {
+                        setFinishRidePanel(false);
+                      }
+                    },
+                  });
+                } else {
+                  gsap.to(targetRef.current, {
+                    y: 0,
+                    duration: 0.3,
+                    ease: "power2.out",
+                  });
+                }
+              }
+            }
+          },
+          { axis: "y" }
+        );
+
+
   
 
   return (
@@ -84,7 +120,7 @@ const CaptainRiding = (props) => {
           </div>
           
       </div>
-      <div className="fixed w-full z-10 bottom-0 translate-y-full bg-white p-3 rounded-t-2xl" ref={FinishRideRef}>
+      <div className="fixed w-full z-10 bottom-0 translate-y-full bg-white p-3 rounded-t-2xl touch-none" ref={FinishRideRef} {...bind()}>
             <FinishRide 
             rideData={rideData}
             setFinishRidePanel={setFinishRidePanel}

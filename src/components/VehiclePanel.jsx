@@ -65,7 +65,7 @@ const VehiclePanel = (props) => {
             onClick={() => {
               setVehicleImage(UberGoImage);
               setConfirmRidePanel(true);
-              props.setVehicleType('car')
+              props.setVehicleType('Car')
             }}
           >
             <div className="w-15 flex items-center justify-center">
@@ -82,7 +82,7 @@ const VehiclePanel = (props) => {
               <p className="text-sm ">Affordable, compact rides</p>
             </div>
             <div className="px-4 py-6">
-              <h3 className="text-lg font-bold">${fare.fare?.car ?? '--'}</h3>
+              <h3 className="text-lg font-bold">${fare.fare?.Car ?? '--'}</h3>
             </div>
           </div>
 
@@ -91,7 +91,7 @@ const VehiclePanel = (props) => {
             onClick={() => {
               setVehicleImage(UberMotoImage);
               setConfirmRidePanel(true);
-              props.setVehicleType('motorcycle')
+              props.setVehicleType('Bike')
             }}
           >
             <div className="w-15 flex items-center justify-center">
@@ -108,7 +108,7 @@ const VehiclePanel = (props) => {
               <p className="text-sm ">Affordable motorcycle rides</p>
             </div>
             <div className="px-4 py-6">
-              <h3 className="text-lg font-bold">${fare.fare?.motorcycle ?? '--'}</h3>
+              <h3 className="text-lg font-bold">${fare.fare?.Bike ?? '--'}</h3>
             </div>
           </div>
 
@@ -117,7 +117,7 @@ const VehiclePanel = (props) => {
             onClick={() => {
               setVehicleImage(UberVanImage);
               setConfirmRidePanel(true);
-              props.setVehicleType('premium')
+              props.setVehicleType('Van')
             }}
           >
             <div className="w-15 flex items-center justify-center">
@@ -134,7 +134,7 @@ const VehiclePanel = (props) => {
               <p className="text-sm ">Premium , comfort rides</p>
             </div>
             <div className="px-4 py-6">
-              <h3 className="text-lg font-bold">${fare.fare?.premium ?? '--'}</h3>
+              <h3 className="text-lg font-bold">${fare.fare?.Van ?? '--'}</h3>
             </div>
           </div>
 
@@ -143,7 +143,7 @@ const VehiclePanel = (props) => {
             onClick={() => {
               setVehicleImage(UberAutoImage);
               setConfirmRidePanel(true);
-              props.setVehicleType('auto')
+              props.setVehicleType('Rickshaw')
             }}
           >
             <div className="w-15 flex items-center justify-center">
@@ -159,7 +159,7 @@ const VehiclePanel = (props) => {
               <h5 className="text-sm font-sans">5 mins away</h5>
             </div>
             <div className="px-4 py-6">
-              <h3 className="text-lg font-bold">${fare.fare?.auto?? '--'}</h3>
+              <h3 className="text-lg font-bold">${fare.fare?.Rickshaw?? '--'}</h3>
             </div>
           </div>
 

@@ -29,7 +29,8 @@ function CaptainHome() {
   const RidePopUpPanelRef = useRef(null)
   const ConfirmRidePopUpRef = useRef(null)
 
-  // Join socket room & update captain location
+  //useEffect
+
   useEffect(() => {
   // Emit join event
   socket.emit('join', {
@@ -81,8 +82,7 @@ function CaptainHome() {
   }, [socket])
 
   useEffect(()=>{
-    setOnline(false)
-    toggleStatus(false)
+    const currentStatus = getCurrentStatus()
   },[])
 
 
@@ -127,21 +127,28 @@ function CaptainHome() {
 
 
 
- async function toggleStatus(next) {
+  async function toggleStatus(next) {
 
-  setLoading(true)
-  const response = await axios.post(
-    `${apiKey}/captains/toggle-status`,
-    { status: next ? 'active' : 'inactive' },
-    { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
-  );
+    setLoading(true)
+    const response = await axios.post(
+      `${apiKey}/captains/toggle-status`,
+      { status: next ? 'active' : 'inactive' },
+      { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
+    );
 
-  if(response) { 
-    setLoading(false)
+    if(response) { 
+      setLoading(false)
+    }
+    return response.data;
+
   }
-  return response.data;
 
-}
+  async function getCurrentStatus() {
+    const currentStatus = await axios.get(`${apiKey}/captains/get-current-status`,{
+      headers : {Authorization  : `Bearer ${localStorage.getItem('token')}`}
+    })
+    setOnline(currentStatus.data.status === 'active')
+  }
 
   async function confirmRide() {
     try {

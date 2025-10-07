@@ -1,11 +1,13 @@
-import React,{useContext} from 'react'
+import React,{useContext,useRef} from 'react'
 import { Link,useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import gsap from 'gsap'
 import { DatabaseContext } from '../context/DatabaseContext'
+import { useDrag } from "@use-gesture/react";
 const FinishRide = (props) => {
 
     const navigate = useNavigate()
-    const {setFinishRidePanel} = props
+    const {setFinishRidePanel } = props
     const {apiKey} = useContext(DatabaseContext)
 
     const finishRide = async (e)=>{
@@ -28,10 +30,11 @@ const FinishRide = (props) => {
       }
     } 
 
+    
   return (
     <div className=' w-full'>
-
-        <div className='w-full px-4 py-3'>
+        <div className=" line2 absolute w-15 top-1/40 h-1 bg-gray-300 left-[43%] rounded-sm mb-4 touch-none"></div>
+        <div className='w-full px-4 py-3 touch-none'>
             <h2 className='text-lg font-semibold'>Finish This Ride</h2>
         </div>
       {/*Profile Detials*/ }
