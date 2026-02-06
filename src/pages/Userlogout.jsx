@@ -3,10 +3,10 @@ import axios from 'axios'
 import { useNavigate } from 'react-router-dom';
 import { DatabaseContext } from '../context/DatabaseContext';
 function Userlogout() {
-    const {apiKey} = useContext(DatabaseContext)
+    const {Key} = useContext(DatabaseContext)
     const token = localStorage.getItem('token');
     const navigate = useNavigate()
-    axios.get(`${apiKey}/users/logout`,{
+    axios.get(`${Key}/users/logout`,{
         headers:{
             Authorization: `Bearer ${token}`
         }

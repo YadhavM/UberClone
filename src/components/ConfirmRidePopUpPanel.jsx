@@ -11,7 +11,7 @@ const ConfirmRidePopUpPanel = (props) => {
   const navigate = useNavigate()
 
     const {setConfirmRidePopUp,setRidePopUpPanel , Location} = props 
-    const {apiKey} = useContext(DatabaseContext)
+    const {Key} = useContext(DatabaseContext)
 
 
     const [otp,setOtp] = useState('')
@@ -21,7 +21,7 @@ const ConfirmRidePopUpPanel = (props) => {
     const SubmitHandler = async (e) => {
       e.preventDefault()
       try {
-        const response = await axios.get(`${apiKey}/rides/start-ride`, {
+        const response = await axios.get(`${Key}/rides/start-ride`, {
           params : {
             rideId : props.ride._id , 
             otp : otp 

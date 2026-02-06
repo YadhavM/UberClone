@@ -8,13 +8,13 @@ const FinishRide = (props) => {
 
     const navigate = useNavigate()
     const {setFinishRidePanel } = props
-    const {apiKey} = useContext(DatabaseContext)
+    const {Key} = useContext(DatabaseContext)
 
     const finishRide = async (e)=>{
       e.preventDefault()
       
 
-      const response = await axios.post(`${apiKey}/rides/end-ride` , 
+      const response = await axios.post(`${Key}/rides/end-ride` , 
         {
           rideId : props.rideData._id
         },{

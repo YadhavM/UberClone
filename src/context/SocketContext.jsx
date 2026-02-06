@@ -8,8 +8,8 @@ export const SocketContext = createContext()
 
 const SocketProvider = ({ children }) => {
 
-  const {apiKey} = useContext(DatabaseContext)
-  const socket = io(`${apiKey}`)
+  const {Key} = useContext(DatabaseContext)
+  const socket = io(`${Key}`)
   useEffect(()=>{
     socket.on('connect', ()=>{
     })

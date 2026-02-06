@@ -5,9 +5,9 @@ import { DatabaseContext } from '../context/DatabaseContext';
 function CaptainLogout() {
     const token = localStorage.getItem('token');
     const navigate = useNavigate()
-    const {apiKey} = useContext(DatabaseContext)
+    const {Key} = useContext(DatabaseContext)
 
-    axios.get(`${apiKey}/captains/logout`, {
+    axios.get(`${Key}/captains/logout`, {
         headers : {
             Authorization: `Bearer ${token}`
         }

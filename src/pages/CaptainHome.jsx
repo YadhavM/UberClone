@@ -15,7 +15,7 @@ import LiveTracking from '../components/LiveTracking'
 function CaptainHome() {
   const { socket } = useContext(SocketContext)
   const { captain } = useContext(CaptainDataContext)
-  const {apiKey} = useContext(DatabaseContext)
+  const {Key} = useContext(DatabaseContext)
 
   const logo = "https://imgs.search.brave.com/Qytw_NXKyFxwwc0vzLr3hbi8hrXtzDbeh_Ziku74uSI/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9sb2dv/cy13b3JsZC5uZXQv/d3AtY29udGVudC91/cGxvYWRzLzIwMjAv/MDUvVWJlci1Mb2dv/LTcwMHgzOTQucG5n"
 
@@ -131,7 +131,7 @@ function CaptainHome() {
 
     setLoading(true)
     const response = await axios.post(
-      `${apiKey}/captains/toggle-status`,
+      `${Key}/captains/toggle-status`,
       { status: next ? 'active' : 'inactive' },
       { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
     );
@@ -144,7 +144,7 @@ function CaptainHome() {
   }
 
   async function getCurrentStatus() {
-    const currentStatus = await axios.get(`${apiKey}/captains/get-current-status`,{
+    const currentStatus = await axios.get(`${Key}/captains/get-current-status`,{
       headers : {Authorization  : `Bearer ${localStorage.getItem('token')}`}
     })
     setOnline(currentStatus.data.status === 'active')
@@ -152,7 +152,7 @@ function CaptainHome() {
 
   async function confirmRide() {
     try {
-      await axios.post(`${apiKey}/rides/confirm`, {
+      await axios.post(`${Key}/rides/confirm`, {
         rideId: ride._id,
         captainId: captain._id
       }, {

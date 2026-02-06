@@ -17,7 +17,7 @@ function UserSignUp() {
   const navigate = useNavigate() ;
 
   const {user , setUser} = useContext(UserDataContext) ;
-  const {apiKey} = useContext(DatabaseContext)
+  const {Key} = useContext(DatabaseContext)
 
   const handleSubmit = async (e) => {
 
@@ -33,7 +33,7 @@ function UserSignUp() {
         firstname: firstname,
         lastname: lastname
       },}
-    const response = await axios.post(`${apiKey}/users/register`, newUser)
+    const response = await axios.post(`${Key}/users/register`, newUser)
 
     if(response.status === 201){
       const data = response.data ;

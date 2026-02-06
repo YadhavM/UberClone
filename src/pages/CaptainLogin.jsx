@@ -8,7 +8,7 @@ function CaptainLogin() {
   const [password, setPassword] = useState('');
   const [loading ,setLoading] = useState(false)
   const {captain,setCaptain} = useContext(CaptainDataContext) ;
-  const {apiKey} = useContext(DatabaseContext)
+  const {Key} = useContext(DatabaseContext)
   const [errors,setErrors] = useState(null)
 
   const navigate = useNavigate();
@@ -21,7 +21,7 @@ function CaptainLogin() {
     try { 
       const loginData = { email, password };
 
-    const response = await axios.post(`${apiKey}/captains/login`, loginData);
+    const response = await axios.post(`${Key}/captains/login`, loginData);
 
     if (response.status === 200) {
       const data = response.data;

@@ -6,7 +6,7 @@ import { DatabaseContext } from '../context/DatabaseContext'
 function UserProtected({children}) {
     const navigate = useNavigate() ; 
     const {captain , setCaptain} = useContext(CaptainDataContext) ;
-    const {apiKey} = useContext(DatabaseContext)
+    const {Key} = useContext(DatabaseContext)
     const [loading , setLoading] = useState(true) ;
     useEffect(()=>{
         const token = localStorage.getItem('token') ;
@@ -15,7 +15,7 @@ function UserProtected({children}) {
                 
         }}
     )
-    axios.get(`${apiKey}/captains/profile`,{
+    axios.get(`${Key}/captains/profile`,{
         headers:{
             Authorization : `Bearer ${localStorage.getItem('token')}`
         }

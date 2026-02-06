@@ -8,7 +8,7 @@ function CaptainSignUp() {
   const navigate = useNavigate() ;
 
   const {captain , setCaptain} = useContext(CaptainDataContext) ;
-  const {apiKey} = useContext(DatabaseContext)
+  const {Key} = useContext(DatabaseContext)
   
   const [email,setEmail] = useState('') ; 
   const [firstname,setFirstname] = useState('') ; 
@@ -42,7 +42,7 @@ function CaptainSignUp() {
 
           })
 
-          const response = await axios.post(`${apiKey}/captains/register`, CaptainData)
+          const response = await axios.post(`${Key}/captains/register`, CaptainData)
 
           if(response.status === 201){
             const data = response.data ;

@@ -6,7 +6,7 @@ import axios from 'axios';
 function UserProtected({children}) {
     const navigate = useNavigate() ; 
     const {user , setUser} = useContext(UserDataContext) ;
-    const {apiKey} = useContext(DatabaseContext)
+    const {Key} = useContext(DatabaseContext)
     const [loading , setLoading] = useState(true) ;
     useEffect(()=>{
         const token = localStorage.getItem('token') ;
@@ -15,7 +15,7 @@ function UserProtected({children}) {
         }}
     )
 
-    axios.get(`${apiKey}/users/profile`,{
+    axios.get(`${Key}/users/profile`,{
         headers:{
             Authorization : `Bearer ${localStorage.getItem('token')}`
         }

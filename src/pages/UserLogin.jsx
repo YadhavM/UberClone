@@ -9,7 +9,7 @@ function UserLogin() {
   const [email,setEmail] = useState('') ; 
   const [password,setPassword] = useState('') ; 
   const {user , setUser} = useContext(UserDataContext) ;
-  const {apiKey} = useContext(DatabaseContext)
+  const {Key} = useContext(DatabaseContext)
   const [loading ,setLoading] = useState(false)
   const [errors,setErrors] = useState(null)
 
@@ -26,7 +26,7 @@ function UserLogin() {
           email : email , 
           password : password , 
         }
-        const response = await axios.post(`${apiKey}/users/login`, userData)
+        const response = await axios.post(`${Key}/users/login`, userData)
         
         if(response.status === 200){
 

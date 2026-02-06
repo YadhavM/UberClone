@@ -22,7 +22,7 @@ function Home() {
 
     const {socket} = useContext(SocketContext)
     const {user} = useContext(UserDataContext)
-    const {apiKey} = useContext(DatabaseContext)
+    const {Key} = useContext(DatabaseContext)
     
     const navigate = useNavigate()
   // states
@@ -345,7 +345,7 @@ useEffect(() => {
 
     try {
       const response = await axios.get(
-        `${apiKey}/maps/get-suggestions`,
+        `${Key}/maps/get-suggestions`,
         {
           params: { address },
           headers: {
@@ -403,7 +403,7 @@ useEffect(() => {
     }
     
     try { 
-      const response = await axios.get(`${apiKey}/rides/get-fare`,{
+      const response = await axios.get(`${Key}/rides/get-fare`,{
       params :{
         pickup , 
         destination
@@ -429,7 +429,7 @@ useEffect(() => {
 
   async function createRide(){
     const response = await axios.post(
-      `${apiKey}/rides/create`,
+      `${Key}/rides/create`,
       {
         pickup,
         destination,
