@@ -15,7 +15,7 @@ const VehiclePanel = (props) => {
 
     const bind = useDrag(
         ({ movement: [, my], last }) => {
-          const targetRef = vehiclePanelRef; // 👈 use correct ref
+          const targetRef = vehiclePanelRef;
     
           if (targetRef?.current) {
             const clampedY = Math.max(0, my);
@@ -59,7 +59,7 @@ const VehiclePanel = (props) => {
             <h3 className="text-2xl font-semibold mb-3 mt-2">Choose a vehicle</h3>
           </div>
 
-          {/* vehicle options... (kept as you had them) */}
+          {/* vehicle options */}
           <div
             className="flex flex-row border-2 border-transparent active:border-black rounded-md"
             onClick={() => {

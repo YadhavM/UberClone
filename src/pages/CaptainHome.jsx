@@ -177,12 +177,9 @@ function CaptainHome() {
                 checked={Online}
                 onChange={async (next) => {
                   try {
-                    const data = await toggleStatus(next); // returns canonical status string
-                    // Map enum -> boolean
+                    const data = await toggleStatus(next);
                     setOnline(data.status === 'active');
                   } catch {
-                    // On failure, keep previous value (no flip), or show an error
-                    // Optionally, revert UI if you optimistically updated earlier
                   }
                 }}
                 className="group inline-flex h-6 w-11 items-center rounded-full bg-gray-300 transition data-checked:bg-green-400"

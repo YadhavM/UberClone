@@ -7,7 +7,7 @@ export default defineConfig({
     react(),
     tailwindcss()
   ],
-  base : "/uber-clone/",
+  base : "/UberClone/",
   server :{
     host : true , 
   }

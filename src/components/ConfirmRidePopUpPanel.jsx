@@ -49,6 +49,7 @@ const ConfirmRidePopUpPanel = (props) => {
         <div className='w-full px-4 py-3'>
             <h2 className='text-lg font-semibold'>Confirm To Start This Ride</h2>
         </div>
+        
       {/*Profile Detials*/ }
         <div className='px-2 mb-2 py-3'>
             <div className='w-full bg-yellow-500 rounded-lg flex flex-row px-4 py-3 items-center justify-between'>

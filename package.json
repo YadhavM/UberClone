@@ -1,6 +1,6 @@
 {
   "name": "frontend",
-  "homepage": "https://yadhavm.github.io/uber-clone",
+  "homepage": "https://yadhavm.github.io/UberClone",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -42,6 +42,7 @@
     "eslint-plugin-react-hooks": "^5.1.0",
     "eslint-plugin-react-refresh": "^0.4.19",
     "globals": "^15.15.0",
+    "husky": "^9.1.7",
     "vite": "^6.2.0"
   }
 }

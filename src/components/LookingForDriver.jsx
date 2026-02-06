@@ -6,44 +6,6 @@ import { useRef } from 'react'
 function VehiclePanel(props) {
   const {vehicleImage , setConfirmRidePanel ,LookingForDriverPanelRef,LookingForDriverPanel,setLookingForDriverPanel} = props ;
 
-/*
-  const bind = useDrag(
-    ({ movement: [, my], last }) => {
-      const targetRef =  LookingForDriverPanelRef
-      
-      if (targetRef?.current) {
-        const clampedY = Math.max(0, my);
-
-        if (!last) {
-          // move along with finger
-          gsap.set(targetRef.current, { y: clampedY });
-        } else {
-          if (clampedY > 80) {
-            gsap.to(targetRef.current, {
-              y: "100%",
-              duration: 0.3,
-              ease: "power2.out",
-              onComplete: () => {
-                if (LookingForDriverPanel) {
-                  setLookingForDriverPanel(false);
-                  //setPanelOpen(true);
-                }
-              },
-            });
-          } else {
-            // snap back to open
-            gsap.to(targetRef.current, {
-              y: 0,
-              duration: 0.3,
-              ease: "power2.out",
-            });
-          }
-        }
-      }
-    },
-    { axis: "y" }
-  );
-*/
 
   return (
     <div className='p-0 m-0 overflow-y-scroll scrollbar-hide'>
