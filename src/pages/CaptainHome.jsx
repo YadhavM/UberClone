@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useContext } from 'react'
-import { Link } from 'react-router-dom'
+import { Link , useNavigate} from 'react-router-dom'
 import CaptainDetails from '../components/CaptainDetails'
 import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
@@ -12,10 +12,14 @@ import { Switch } from '@headlessui/react'
 import axios from 'axios'
 import LiveTracking from '../components/LiveTracking'
 
+
+
 function CaptainHome() {
   const { socket } = useContext(SocketContext)
   const { captain } = useContext(CaptainDataContext)
   const {Key} = useContext(DatabaseContext)
+
+  const navigate = useNavigate() ;
 
   const logo = "https://imgs.search.brave.com/Qytw_NXKyFxwwc0vzLr3hbi8hrXtzDbeh_Ziku74uSI/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9sb2dv/cy13b3JsZC5uZXQv/d3AtY29udGVudC91/cGxvYWRzLzIwMjAv/MDUvVWJlci1Mb2dv/LTcwMHgzOTQucG5n"
 
@@ -25,6 +29,7 @@ function CaptainHome() {
   const [location, setLocation] = useState({})
   const [Online, setOnline] = useState(false)
   const [loading , setLoading] = useState(false)
+  const [logoutRequestPanel , setLogoutRequestPanel] = useState(false)
 
   const RidePopUpPanelRef = useRef(null)
   const ConfirmRidePopUpRef = useRef(null)
@@ -188,10 +193,34 @@ function CaptainHome() {
               </Switch>
               
           </div>
-          <Link to="/captain-logout" className=''>
+          <button onClick={() => setLogoutRequestPanel(true)} className=''>
           <i className="text-xl font-semibold ri-logout-box-r-line"></i>
-          </Link>
+          </button>
       </div>
+
+      {/*Logout Request Panel*/ }
+        {
+          logoutRequestPanel && ( 
+            <div className="w-full h-full absolute flex items-center justify-center absolute top-0 left-0 z-100 bg-[#000000B3] backdrop-blur-xs" >
+                <div className="bg-white w-60 px-4 py-3 h-30 rounded-lg flex items-center justify-between flex-col">
+                    <h1 className="px-2">Are you sure you want to logout?</h1>
+
+                      <div className="w-full flex items-center justify-end  px-5 py-3">
+                          <button onClick={() => setLogoutRequestPanel(false)}>No</button>
+                          <button onClick={() => {
+                            setLogoutRequestPanel(false);
+                            navigate('/captain-logout');
+                          }} className="pl-6 text-red-500">
+                            Yes
+                          </button>
+                      </div>
+
+                </div>
+            </div>
+          )
+        }
+
+
 
       {/* Map */}
       <div className="relative w-full h-3/5 z-0">

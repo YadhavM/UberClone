@@ -45,6 +45,7 @@ function Home() {
   const [NoDriverFound, setNoDriverFound] = useState(false)
   const [Errors,setErrors] = useState("")
   const [LocationPicked , setLocationPicked] = useState(false)
+  const [logoutRequestPanel , setLogoutRequestPanel] = useState(false)
 
   // refs
   const bottomPanelRef = useRef(null);
@@ -453,12 +454,35 @@ useEffect(() => {
 
       <button
         onClick={()=>{
-          navigate('/user-logout')
+          setLogoutRequestPanel(true)
         }}
         className="absolute right-5 top-5 px-4 py-3 bg-white rounded-full z-3 "
       >
         <i className="text-xl font-semibold ri-logout-box-r-line"></i>
       </button>
+
+        {/*Logout Request Panel*/ }
+        {
+          logoutRequestPanel && ( 
+            <div className="w-full h-full absolute flex items-center justify-center absolute top-0 left-0 z-100 bg-[#000000B3] backdrop-blur-xs" >
+                <div className="bg-white w-60 px-4 py-3 h-30 rounded-lg flex items-center justify-between flex-col">
+                    <h1 className="px-2">Are you sure you want to logout?</h1>
+
+                      <div className="w-full flex items-center justify-end  px-5 py-3">
+                          <button onClick={() => setLogoutRequestPanel(false)}>No</button>
+                          <button onClick={() => {
+                            setLogoutRequestPanel(false);
+                            navigate('/user-logout');
+                          }} className="pl-6 text-red-500">
+                            Yes
+                          </button>
+                      </div>
+
+                </div>
+            </div>
+          )
+        }
+      
 
       {/* Background image */}
       <div className="h-screen w-screen z-[-10] touch-auto">
