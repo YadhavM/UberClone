@@ -12,7 +12,7 @@ createRoot(document.getElementById('root')).render(
       <CaptainContext>
       <UserContext>
         <SocketProvider>
-          <HashRouter basename="/UberClone/">
+          <HashRouter>
             <App />
           </HashRouter>
         </SocketProvider>
