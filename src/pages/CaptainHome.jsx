@@ -132,12 +132,12 @@ function CaptainHome() {
 
 
 
-  async function toggleStatus(next) {
+  async function toggleStatus(nextStatus) {
 
     setLoading(true)
     const response = await axios.post(
       `${Key}/captains/toggle-status`,
-      { status: next ? 'active' : 'inactive' },
+      { status: nextStatus ? 'active' : 'inactive' },
       { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
     );
 
@@ -180,9 +180,9 @@ function CaptainHome() {
             
               <Switch
                 checked={Online}
-                onChange={async (next) => {
+                onChange={async (nextStatus) => {
                   try {
-                    const data = await toggleStatus(next);
+                    const data = await toggleStatus(nextStatus);
                     setOnline(data.status === 'active');
                   } catch {
                   }
@@ -210,6 +210,8 @@ function CaptainHome() {
                           <button onClick={() => {
                             setLogoutRequestPanel(false);
                             navigate('/captain-logout');
+                            toggleStatus(false);
+                            setOnline(false);
                           }} className="pl-6 text-red-500">
                             Yes
                           </button>
